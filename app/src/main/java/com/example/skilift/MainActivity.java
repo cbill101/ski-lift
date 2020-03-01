@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -35,6 +36,9 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.security.Security;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
     private MapView rsMapView;
     private GoogleMap gmap;
@@ -49,6 +53,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getResources().getBoolean(R.bool.portrait_only)) {
+            //noinspection AndroidLintSourceLockedOrientationActivity
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+
         setContentView(R.layout.activity_main);
 
         mainActBundle = new Bundle();
@@ -190,26 +200,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         gmap.getUiSettings().setZoomGesturesEnabled(true);
         gmap.getUiSettings().setRotateGesturesEnabled(false);
 
-        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-        while (lastKnownLocation == null) {
-            lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        }
-
-        centreMapOnLocation(lastKnownLocation);
-
         centerLoc.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                centreMapOnLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+                centreMapOnLocation(getLastKnownLoc());
             }
         });
         centerLoc.show();
+
+        centreMapOnLocation(getLastKnownLoc());
     }
 
-    public void centreMapOnLocation(Location location){
-        LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
+    public void centreMapOnLocation(Location location) {
+        LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
         gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 100, null);
     }
 
@@ -220,7 +224,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
                 alertBuilder.setCancelable(true);
                 alertBuilder.setTitle("Location Permissions Request");
-                alertBuilder.setMessage("Location permissions are needed in Ski Lift so rideshare providers can find you much easier.");
+                alertBuilder.setMessage("Location permissions are needed in Ski Lift so rideshare providers can find you much easier. " +
+                        "If denied, you can set a location marker when requesting as pick up.");
                 alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -232,9 +237,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 AlertDialog alert = alertBuilder.create();
                 alert.show();
-            }
-            else
-            {
+            } else {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                         LOCATION_REQUEST);
@@ -242,5 +245,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         } else {
             mapInitialize();
         }
+    }
+
+    private Location getLastKnownLoc() {
+        List<String> providers = locationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+
+            //noinspection AndroidLintMissingPermission
+            Location l = locationManager.getLastKnownLocation(provider);
+
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
     }
 }

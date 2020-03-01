@@ -10,16 +10,17 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:id="@+id/sls_magnify"
         android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="212dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="@dimen/search_horiz_offset_land"
         android:layout_marginTop="20dp"
         android:hint="@string/slSearchPH"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapView">
+        app:layout_constraintTop_toTopOf="@+id/mapView">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#ffff"
             android:inputType="text"/>
     </com.google.android.material.textfield.TextInputLayout>
 

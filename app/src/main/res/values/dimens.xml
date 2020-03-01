@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="search_horiz_offset_port">52dp</dimen>
+    <dimen name="search_horiz_offset_land">210dp</dimen>
+</resources>
