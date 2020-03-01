@@ -42,15 +42,16 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/search_horiz_offset_port"
         android:layout_marginTop="30dp"
-        android:hint="@string/slSearchPH"
+        android:background="#ffff"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/mapView">
+        app:layout_constraintTop_toTopOf="@+id/mapView"
+        app:hintEnabled="false">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#ffff"
-            android:inputType="text" />
+            android:layout_height="match_parent"
+            android:inputType="text"
+            android:hint="@string/slSearchPH"/>
     </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
