@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Ski Lift</string>
     <string name="slSearchPH">Where to?</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="user_type">User Type</string>
+    <string name="requester">Requester</string>
+    <string name="provider">Provider</string>
 </resources>

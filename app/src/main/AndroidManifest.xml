@@ -13,21 +13,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".UserType" />
+        <activity android:name=".MainActivity" />
+
         <service
             android:name=".SLLocationService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
-        <activity android:name=".MainActivity" android:configChanges="screenSize">
+        <activity
+            android:name=".LoginMenu"
+            android:configChanges="screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD3t1r5hxMOVfPiBphOuTmJhErcHO0m-Pg"/>
+            android:value="AIzaSyD3t1r5hxMOVfPiBphOuTmJhErcHO0m-Pg" />
     </application>
 
 </manifest>
