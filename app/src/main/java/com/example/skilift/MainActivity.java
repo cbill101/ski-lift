@@ -2,6 +2,7 @@ package com.example.skilift;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -27,6 +28,8 @@ import com.google.android.material.snackbar.Snackbar;
 import android.os.Bundle;
 import android.os.Build;
 import android.provider.Settings;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -61,6 +64,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         setContentView(R.layout.activity_main);
 
+        Toolbar myToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+
         mainActBundle = new Bundle();
 
         rsMapView = findViewById(R.id.mapView);
@@ -68,6 +74,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         rsMapView.onCreate(savedInstanceState);
         rsMapView.getMapAsync(this);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_context_menu, menu);
+        return true;
+    }
+
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -195,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         FloatingActionButton centerLoc = findViewById(R.id.centerLocButton);
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
         gmap.setMyLocationEnabled(true);
         gmap.getUiSettings().setMyLocationButtonEnabled(false);
         gmap.getUiSettings().setZoomGesturesEnabled(true);
@@ -220,7 +235,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void requestLocationPerms() {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
                 alertBuilder.setCancelable(true);
                 alertBuilder.setTitle("Location Permissions Request");
