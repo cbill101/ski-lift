@@ -8,4 +8,8 @@
     <string name="user_type">User Type</string>
     <string name="requester">Requester</string>
     <string name="provider">Provider</string>
+    <string name="help">Help/Support</string>
+    <string name="settings">Settings</string>
+    <string name="account">Account</string>
+    <string name="about">About</string>
 </resources>

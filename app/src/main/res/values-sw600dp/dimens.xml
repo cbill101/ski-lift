@@ -2,4 +2,5 @@
 <resources>
     <dimen name="search_horiz_offset_port">135dp</dimen>
     <dimen name="search_horiz_offset_land">325dp</dimen>
+    <dimen name="search_tb_width">400dp</dimen>
 </resources>
