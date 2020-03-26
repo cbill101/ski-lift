@@ -12,10 +12,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class LoginMenu extends AppCompatActivity {
-    private static final String BUNDLE_USERNAME = "username";
-    private static final String BUNDLE_PASSWORD = "password";
+    private static final String BUNDLE_USERNAME = "";
+    private static final String BUNDLE_PASSWORD = "";
     private Button loginButton;
-    private Button registerButton;
     private EditText usernameInput;
     private EditText passwordInput;
 
@@ -25,17 +24,10 @@ public class LoginMenu extends AppCompatActivity {
         setContentView(R.layout.activity_login_menu);
 
         loginButton = findViewById(R.id.loginButton);
-        registerButton = findViewById(R.id.registerButton);
         usernameInput = findViewById(R.id.usernameInput);
         passwordInput = findViewById(R.id.passwordInput);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                openUserType();
-            }
-        });
-        registerButton.setOnClickListener(new View.OnClickListener() {
-                @Override
             public void onClick(View v) {
                 openUserType();
             }
