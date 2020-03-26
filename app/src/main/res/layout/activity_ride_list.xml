@@ -6,37 +6,46 @@
     android:layout_height="match_parent"
     tools:context=".RideList">
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.166"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.272">
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/confirmButton"
+        android:layout_below="@id/textView"
+        android:padding="10dp"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/listView"/>
 
-        <RadioButton
-            android:id="@+id/oneRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="One" />
+<!--    <RadioGroup-->
+<!--        android:id="@+id/radioGroup"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_centerInParent="true"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.166"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.272">-->
 
-        <RadioButton
-            android:id="@+id/twoRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Two" />
+<!--        <RadioButton-->
+<!--            android:id="@+id/oneRadio"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="One" />-->
 
-        <RadioButton
-            android:id="@+id/threeRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Three" />
+<!--        <RadioButton-->
+<!--            android:id="@+id/twoRadio"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Two" />-->
 
-    </RadioGroup>
+<!--        <RadioButton-->
+<!--            android:id="@+id/threeRadio"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="Three" />-->
+
+<!--    </RadioGroup>-->
 
     <TextView
         android:id="@+id/textView"
