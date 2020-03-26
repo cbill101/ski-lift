@@ -1,5 +1,7 @@
 package com.example.skilift;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -15,22 +17,43 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.location.LocationListener;
 
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.libraries.places.api.Places;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Build;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,8 +61,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.IOException;
 import java.security.Security;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -48,8 +75,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationManager locationManager;
     private LocationListener listener;
     private Bundle mainActBundle;
+    private TextInputEditText searchBar;
+    private PlacesClient gmapPlacesClient;
+    private AutocompleteSupportFragment autocompleteFragment;
+    private Marker marker;
 
     public static final int LOCATION_REQUEST = 0;
+    private static final int AUTOCOMPLETE_REQUEST = 1;
+    private static final String TAG = "MainActivity";
 
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
@@ -57,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Locking in portrait for our purposes for now... is it really worth doing landscape unless it's a tablet?
         if (getResources().getBoolean(R.bool.portrait_only)) {
             //noinspection AndroidLintSourceLockedOrientationActivity
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -73,10 +107,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         rsMapView.onCreate(savedInstanceState);
         rsMapView.getMapAsync(this);
+
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getString(R.string.googleApiKey));
+        }
+
+        autocompleteFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        initAutocomplete();
+
+        gmapPlacesClient = Places.createClient(this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_context_menu, menu);
         return true;
@@ -87,10 +133,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Toast.makeText(this, "LANDSCAPE", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "onConfigurationChanged: switched over to landscape");
             onSaveInstanceState(mainActBundle);
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Toast.makeText(this, "PORTRAIT", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "onConfigurationChanged: switched over to portrait");
             onSaveInstanceState(mainActBundle);
         }
     }
@@ -203,35 +249,91 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         requestLocationPerms();
     }
 
-    @SuppressLint("MissingPermission")
-    // ONLY CALL THIS IN DEFINED CHECKS OR ELSE RIP BROKEN APP CITY.
-    private void mapInitialize() {
-        FloatingActionButton centerLoc = findViewById(R.id.centerLocButton);
+    private void initAutocomplete() {
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME));
+        autocompleteFragment.setTypeFilter(TypeFilter.ESTABLISHMENT);
+        autocompleteFragment.setHint("Where to?");
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
-        gmap.setMyLocationEnabled(true);
-        gmap.getUiSettings().setMyLocationButtonEnabled(false);
-        gmap.getUiSettings().setZoomGesturesEnabled(true);
-        gmap.getUiSettings().setRotateGesturesEnabled(false);
-
-        centerLoc.setOnClickListener(new View.OnClickListener() {
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+                centreMapOnLocation(place);
+                marker.setPosition(place.getLatLng());
+                marker.setVisible(true);
+            }
 
             @Override
-            public void onClick(View v) {
-                centreMapOnLocation(getLastKnownLoc());
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
             }
         });
-        centerLoc.show();
-
-        centreMapOnLocation(getLastKnownLoc());
     }
 
+    /**
+     * Initializes the Google Map instance in the main activity.
+     */
+    private void mapInitialize() {
+        gmap.getUiSettings().setZoomGesturesEnabled(true);
+        gmap.getUiSettings().setRotateGesturesEnabled(false);
+        marker = gmap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).visible(false));
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            FloatingActionButton centerLoc = findViewById(R.id.centerLocButton);
+
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
+            gmap.setMyLocationEnabled(true);
+            gmap.getUiSettings().setMyLocationButtonEnabled(false);
+
+            centerLoc.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    centreMapOnLocation(getLastKnownLoc());
+                }
+            });
+            centerLoc.show();
+
+            centreMapOnLocation(getLastKnownLoc());
+        }
+    }
+
+    /**
+     * Center's the map to the passed in location.
+     *
+     * @param location - google maps location object being the location to center to.
+     */
     public void centreMapOnLocation(Location location) {
         LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
         gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 100, null);
     }
 
+    /**
+     * Center's the map to the passed in location.
+     *
+     * @param place - google maps place object being the location to center to.
+     */
+    public void centreMapOnLocation(Place place) {
+        LatLng userLocation = place.getLatLng();
+        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 100, null);
+    }
+
+
+    /**
+     * Center's the map to the passed in address.
+     *
+     * @param addr - google maps address object being the location to center to.
+     */
+    public void centreMapOnLocation(Address addr) {
+        LatLng userLocation = new LatLng(addr.getLatitude(), addr.getLongitude());
+        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 100, null);
+    }
+
+    /**
+     * Helper method that manages requesting location permissions.
+     */
     private void requestLocationPerms() {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -263,6 +365,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /**
+     * Gets the best, last known location based on accuracy from the location providers.
+     *
+     * @return Last known location, a Google Maps Location object.
+     */
     private Location getLastKnownLoc() {
         List<String> providers = locationManager.getProviders(true);
         Location bestLocation = null;

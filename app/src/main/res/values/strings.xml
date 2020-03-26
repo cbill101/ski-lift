@@ -25,4 +25,5 @@
     <string name="coordinate_ride_nthrough_text">Coordinate ride\nthrough text</string>
     <string name="finished_nride">Finished\nride</string>
     <string name="phone_nnumber">Phone\nNumber</string>
+    <string name="googleApiKey">AIzaSyD3t1r5hxMOVfPiBphOuTmJhErcHO0m-Pg</string>
 </resources>
