@@ -21,19 +21,26 @@ public class UserType extends AppCompatActivity {
         requesterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openMaps();
+                openRideList();
             }
         });
         providerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openMaps();
+                openInfo();
             }
         });
     }
 
-    private void openMaps() {
-        Intent intent = new Intent(this, MainActivity.class);
+    //Open maps page
+    private void openRideList() {
+        Intent intent = new Intent(this, RideList.class);
+        startActivity(intent);
+    }
+
+    //Open info page
+    private void openInfo() {
+        Intent intent = new Intent(this, Info.class);
         startActivity(intent);
     }
 }

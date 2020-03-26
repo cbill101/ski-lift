@@ -13,6 +13,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Communicate"></activity>
+        <activity android:name=".Payment" />
+        <activity android:name=".RideList" />
+        <activity android:name=".Wait" />
+        <activity android:name=".Info" />
         <activity android:name=".MainActivity" />
         <activity android:name=".UserType" />
 
