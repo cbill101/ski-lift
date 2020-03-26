@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "997206950193",
+    "firebase_url": "https://ski-lift-bc02d.firebaseio.com",
+    "project_id": "ski-lift-bc02d",
+    "storage_bucket": "ski-lift-bc02d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997206950193:android:afc64ac6b7462c2f01f010",
+        "android_client_info": {
+          "package_name": "com.example.skilift"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "997206950193-a26d9asld61enopm9etjagekrcdnv4c9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.skilift",
+            "certificate_hash": "92c81c9120379d1d943e08339a6a8708f2dfb358"
+          }
+        },
+        {
+          "client_id": "997206950193-0evhqmf904kth91q5jkg83ig2mmv0f2l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZwPQOCtAvzta4sWpqbz5hE0azqd6t0RE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "997206950193-0evhqmf904kth91q5jkg83ig2mmv0f2l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

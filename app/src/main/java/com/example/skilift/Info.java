@@ -8,6 +8,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class Info extends AppCompatActivity {
     private static final String BUNDLE_NAME = "";
@@ -51,7 +56,28 @@ public class Info extends AppCompatActivity {
 
     //Anderson put the stuff you need to have happen when the button is pressed here
     private void AndersonStuff() {
+        // Get text from fields
+        String name = nameInput.getText().toString();
+        String phone = phoneInput.getText().toString();
+        String price = priceInput.getText().toString();
 
+        // Save provider info into a hashmap
+        HashMap<String, Object> provInfoMap = new HashMap<>();
+        provInfoMap.put("name", name);
+        provInfoMap.put("phone", phone);
+        provInfoMap.put("price", price);
+
+        // Check for empty fields
+        if(name.isEmpty() || phone.isEmpty() || price.isEmpty()){
+            Toast.makeText(Info.this, "Please enter info in all fields", Toast.LENGTH_SHORT).show();
+        } else {
+            // Save to db
+            FirebaseDatabase.getInstance().getReference()
+                    .child("Providers")
+                    .child(provInfoMap.get("name").toString())
+                    .setValue(provInfoMap);
+            Toast.makeText(Info.this, "Info saved!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
