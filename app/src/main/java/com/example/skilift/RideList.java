@@ -6,12 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,17 +21,17 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class RideList extends AppCompatActivity {
-    private RadioGroup radioGroup;
-    private RadioButton radioButton;
     private Button confirmButton;
     private ListView listView;
+
+    private RadioButton listRadioButton = null;
+    int listIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride_list);
 
-        radioGroup = findViewById(R.id.radioGroup);
         confirmButton = findViewById(R.id.confirmButton);
         listView = findViewById(R.id.listView);
         confirmButton.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +66,22 @@ public class RideList extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void onClickRadioButton(View v) {
+        View vMain = ((View) v.getParent());
+
+        // uncheck previous checked button.
+        if (listRadioButton != null) listRadioButton.setChecked(false);
+        // assign to the variable the new one
+        listRadioButton = (RadioButton) v;
+        // find if the new one is checked or not, and set "listIndex"
+        if (listRadioButton.isChecked()) {
+            listIndex = ((ViewGroup) vMain.getParent()).indexOfChild(vMain);
+        } else {
+            listRadioButton = null;
+            listIndex = -1;
+        }
     }
 
     //For now goes to next page

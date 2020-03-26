@@ -6,39 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".RideList">
 
-    <RadioGroup
-        android:id="@+id/radioGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.181"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.382">
-
-        <RadioButton
-            android:id="@+id/oneRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="One" />
-
-        <RadioButton
-            android:id="@+id/twoRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Two" />
-
-        <RadioButton
-            android:id="@+id/threeRadio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Three" />
-
-    </RadioGroup>
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -51,6 +18,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.044" />
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="@+id/confirmButton"
+        android:layout_above="@id/confirmButton"
+        android:layout_below="@id/textView"
+        android:choiceMode="singleChoice"
+        android:padding="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/confirmButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <Button
         android:id="@+id/confirmButton"
