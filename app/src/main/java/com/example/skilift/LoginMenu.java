@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -44,16 +45,13 @@ public class LoginMenu extends AppCompatActivity {
         createAccountButton = findViewById(R.id.createAccountButton);
         // [START initialize_auth]
         // Initialize Firebase Auth
+
         mAuth = FirebaseAuth.getInstance();
 
-        // Go to UserType page if already logged in
-        if(mAuth.getCurrentUser() != null)
-        {
-            Intent intent = new Intent(this, UserType.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-        }
+        // Else, sign in options! Google:
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
 
         // [END initialize_auth]
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -70,17 +68,17 @@ public class LoginMenu extends AppCompatActivity {
         });
     }
 
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        // Check if user is signed in (non-null) and update UI accordingly.
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        updateUI(currentUser);
-//    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        updateUI(currentUser);
+    }
 
     private void createAccount(String email, String password) {
         Log.d(TAG, "createAccount:" + email +" Correct Form:" + correctEmailForm(email));
-        if(correctEmailForm(email) && correctPassword(password)){
+        if(correctEmailForm(email)){
             // [START create_user_with_email]
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -108,7 +106,7 @@ public class LoginMenu extends AppCompatActivity {
 
     private void signIn(String email, String password) {
         Log.d(TAG, "Sign In :" + email +" Correct Form:" + correctEmailForm(email));
-        if(correctEmailForm(email) && correctPassword(password)) {
+        if(correctEmailForm(email)) {
 
             //showProgressBar();
 
@@ -150,17 +148,10 @@ public class LoginMenu extends AppCompatActivity {
         return email.matches(regex);
     }
 
-    private boolean correctPassword(String password){
-        return true;
-    }
-
 
     private void updateUI(FirebaseUser user){
-        if (user == null) {
-            Toast.makeText(getApplicationContext(), "Authentication failed.",
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getApplicationContext(), "Authentication success.",
+        if (user != null) {
+            Toast.makeText(getApplicationContext(), "Welcome back, " + user.getEmail(),
                     Toast.LENGTH_SHORT).show();
             openUserType();
         }

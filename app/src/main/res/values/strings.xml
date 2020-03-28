@@ -30,4 +30,5 @@
     <string name="googleApiKey">AIzaSyD3t1r5hxMOVfPiBphOuTmJhErcHO0m-Pg</string>
     <string name="email">Email</string>
     <string name="signOut">Sign Out</string>
+    <string name="createAccount">Create Account</string>
 </resources>
