@@ -6,15 +6,29 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 //Evan do your stuff here
 public class Payment extends AppCompatActivity {
     private Button nextPageButton;
+    private EditText CC;
+    private EditText date;
+    private EditText SC;
+    private TextView priceTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
+        Intent intent = getIntent();
+        double price = intent.getDoubleExtra("price",5.0);
+        CC = findViewById(R.id.editTextCC);
+        date = findViewById(R.id.editTextDate);
+        SC = findViewById(R.id.editTextSC);
+        priceTextView = findViewById(R.id.priceTextView);
+        priceTextView.append("Price: $"+String.valueOf(price));
+
 
         nextPageButton = findViewById(R.id.finishedButton);
         nextPageButton.setOnClickListener(new View.OnClickListener() {

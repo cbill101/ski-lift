@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -87,6 +88,10 @@ public class RideList extends AppCompatActivity {
     //For now goes to next page
     private void openPayment() {
         Intent intent = new Intent(this, Payment.class);
+        String[] info = listRadioButton.getText().toString().split("\\n");
+        String[] price = info[2].split(" ");
+            Log.d("price", price[1]);
+        intent.putExtra("price",Double.parseDouble(price[1]));
         startActivity(intent);
     }
 }
