@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -36,6 +37,8 @@ public class Account extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mAuth.signOut();
+                Toast.makeText(getApplicationContext(), "Sign out successful.",
+                        Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(v.getContext(), LoginMenu.class));
                 finish();
             }
