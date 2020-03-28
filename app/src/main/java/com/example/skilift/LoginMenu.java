@@ -38,7 +38,6 @@ public class LoginMenu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_menu);
-
         loginButton = findViewById(R.id.loginButton);
         usernameInput = findViewById(R.id.usernameInput);
         passwordInput = findViewById(R.id.passwordInput);
@@ -46,6 +45,16 @@ public class LoginMenu extends AppCompatActivity {
         // [START initialize_auth]
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+
+        // Go to UserType page if already logged in
+        if(mAuth.getCurrentUser() != null)
+        {
+            Intent intent = new Intent(this, UserType.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }
+
         // [END initialize_auth]
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
