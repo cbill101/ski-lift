@@ -38,4 +38,6 @@
     <string name="phone">Phone</string>
     <string name="confirm">Confirm</string>
     <string name="create">Create</string>
+    <string name="finish">Finish</string>
+    <string name="finishAccount">Finish Creation</string>
 </resources>

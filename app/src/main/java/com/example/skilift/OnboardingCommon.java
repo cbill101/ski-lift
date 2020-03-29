@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -208,7 +210,15 @@ public abstract class OnboardingCommon extends AppCompatActivity implements Logi
                             openUserType();
                             finish();
                         } else {
+                            // check for google, send to finish if so.
+                            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
                             Log.d(TAG, "No such document");
+
+                            if(acct != null) {
+                                Intent intent = new Intent(getApplicationContext(), FinishGoogleAccount.class);
+                                startActivity(intent);
+                                finish();
+                            }
                         }
                     } else {
                         Log.d(TAG, "get failed with ", task.getException());

@@ -156,7 +156,7 @@ public class CreateAccountActivity extends OnboardingCommon {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         String name = nameInput.getText().toString().trim();
-        String phone = phoneInput.getText().toString().trim();
+        String phone = ccp.getFormattedFullNumber();
         String email = usernameInput.getText().toString().trim();
 
         // Save user info into a hashmap
