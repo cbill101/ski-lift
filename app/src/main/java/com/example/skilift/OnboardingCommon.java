@@ -25,6 +25,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Map;
+import java.util.jar.Attributes;
 
 public abstract class OnboardingCommon extends AppCompatActivity implements LoginLayout {
     private static final String TAG = "OnboardingCommon";
@@ -187,20 +193,26 @@ public abstract class OnboardingCommon extends AppCompatActivity implements Logi
      */
     public void updateUI(FirebaseUser user){
         if (user != null) {
-            DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Users").child(user.getUid());
-
-            db.addListenerForSingleValueEvent(new ValueEventListener() {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference userDocRef = db.collection("users").document(user.getUid());
+            userDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    String name = dataSnapshot.getValue(User.class).getFirstName();
-                    Toast.makeText(getApplicationContext(), "Welcome back, " + name + "!",
-                            Toast.LENGTH_SHORT).show();
-                    openUserType();
-                    finish();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                            User user = new User(document.getData());
+                            Toast.makeText(getApplicationContext(), "Welcome back, " + user.getFirstName() + "!",
+                                    Toast.LENGTH_SHORT).show();
+                            openUserType();
+                            finish();
+                        } else {
+                            Log.d(TAG, "No such document");
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                    }
 
                 }
             });

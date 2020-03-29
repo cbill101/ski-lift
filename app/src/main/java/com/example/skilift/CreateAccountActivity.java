@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseError;
@@ -20,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.hbb20.CountryCodePicker;
 
 import java.util.HashMap;
@@ -150,7 +153,7 @@ public class CreateAccountActivity extends OnboardingCommon {
      * Adds user info, called when auth is successful (meaning all verified so no need to re check.
      */
     private void addUserInfo() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         String name = nameInput.getText().toString().trim();
         String phone = phoneInput.getText().toString().trim();
@@ -162,9 +165,21 @@ public class CreateAccountActivity extends OnboardingCommon {
         userInfoMap.put("Phone", phone);
         userInfoMap.put("Email", email);
 
-        reference.child(mAuth.getCurrentUser().getUid())
-                    .setValue(userInfoMap);
-        Log.d(TAG, "addUserInfo: user info added successfully to DB.");
+        db.collection("users")
+            .document(mAuth.getCurrentUser().getUid())
+            .set(userInfoMap)
+            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "addUserInfo: added user info successfully to firestore.");
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.w(TAG, "addUserInfo: Error writing user document: ", e);
+                }
+            });
     }
 
     private boolean validPhone() {
