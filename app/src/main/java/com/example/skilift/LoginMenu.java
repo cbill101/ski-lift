@@ -6,8 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Debug;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -22,6 +25,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +46,9 @@ public class LoginMenu extends AppCompatActivity {
     private Button loginButton;
     private Button createAccountButton;
     private SignInButton gsoButton;
+    private TextInputLayout usernameLayout;
+    private TextInputLayout passwordLayout;
+
     private EditText usernameInput;
     private EditText passwordInput;
     private GoogleSignInClient mGoogleSignInClient;
@@ -56,13 +63,21 @@ public class LoginMenu extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
         usernameInput = findViewById(R.id.usernameInput);
         passwordInput = findViewById(R.id.passwordInput);
+        usernameLayout = findViewById(R.id.usernameInputLayout);
+        passwordLayout = findViewById(R.id.passwordInputLayout);
         createAccountButton = findViewById(R.id.createAccountButton);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        // better than onRestoreInstanceState looking at the lifecycle
+        if(savedInstanceState != null) {
+            usernameInput.setText(savedInstanceState.getString(BUNDLE_USERNAME));
+            passwordInput.setText(savedInstanceState.getString(BUNDLE_PASSWORD));
+        }
+
         // [START initialize_auth]
         // Initialize Firebase Auth
 
         mAuth = FirebaseAuth.getInstance();
-
-
 
         // Else, sign in options! Google:
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -74,11 +89,31 @@ public class LoginMenu extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         gsoButton = findViewById(R.id.googleLoginButton);
-        gsoButton.setSize(SignInButton.SIZE_WIDE);
         gsoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signInGoogle();
+            }
+        });
+
+        usernameInput.addTextChangedListener(new MyTextWatcher(usernameInput));
+        passwordInput.addTextChangedListener(new MyTextWatcher(passwordInput));
+
+        usernameInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    correctEmailForm();
+                }
+            }
+        });
+
+        passwordInput.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    correctPasswordForm();
+                }
             }
         });
 
@@ -111,8 +146,8 @@ public class LoginMenu extends AppCompatActivity {
      * @param password - the password to use for the account in question
      */
     private void createAccount(String email, String password) {
-        boolean validPass = correctPasswordForm(password);
-        boolean validEmail = correctEmailForm(email);
+        boolean validPass = correctPasswordForm();
+        boolean validEmail = correctEmailForm();
 
         Log.d(TAG, "createAccount:" + email +" Correct Form:" + validEmail);
 
@@ -136,13 +171,10 @@ public class LoginMenu extends AppCompatActivity {
                         }
                     });
             // [END create_user_with_email]
-        } else if (!validPass) {
-            Toast.makeText(getApplicationContext(), "Password must be at least 8 characters, at least one letter, one number, and one special character.",
-                    Toast.LENGTH_SHORT).show();
         }
         else {
-            Toast.makeText(getApplicationContext(), "Email invalid - not correct style.",
-                    Toast.LENGTH_SHORT).show();
+            usernameLayout.setError(getString(R.string.err_msg_incorrect_any));
+            requestFocus(usernameInput);
         }
     }
 
@@ -152,10 +184,10 @@ public class LoginMenu extends AppCompatActivity {
      * @param password - the user's password to check.
      */
     private void signIn(String email, String password) {
-        boolean validPass = correctPasswordForm(password);
-        boolean validEmail = correctEmailForm(email);
+        boolean validPass = correctPasswordForm();
+        boolean validEmail = correctEmailForm();
 
-        Log.d(TAG, "Sign In :" + email +" Correct Form:" + validEmail);
+        Log.d(TAG, "Sign In: " + email +" Correct Form: " + validEmail);
         Log.d(TAG, "Correct Password Form: " + validPass);
 
         if(validEmail && validPass) {
@@ -172,6 +204,8 @@ public class LoginMenu extends AppCompatActivity {
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
+                                passwordLayout.setError(getString(R.string.err_msg_incorrect_any));
+                                requestFocus(passwordLayout);
                                 updateUI(null);
                                 // [START_EXCLUDE]
                                 //checkForMultiFactorFailure(task.getException());
@@ -187,13 +221,10 @@ public class LoginMenu extends AppCompatActivity {
                         }
                     });
             // [END sign_in_with_email]
-        } else if (!validPass) {
-            Toast.makeText(getApplicationContext(), "Password must be at least 8 characters, at least one letter, one number, and one special character.",
-                    Toast.LENGTH_SHORT).show();
         }
         else {
-            Toast.makeText(getApplicationContext(), "Email invalid - not correct style.",
-                    Toast.LENGTH_SHORT).show();
+            passwordLayout.setError(getString(R.string.err_msg_incorrect_any));
+            requestFocus(passwordLayout);
         }
     }
 
@@ -252,26 +283,48 @@ public class LoginMenu extends AppCompatActivity {
                 });
     }
 
+    private void requestFocus(View view) {
+        if (view.requestFocus()) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
+    }
+
     /**
      * Reges pattern to check for a valid formed email.
-     * @param email - the string to parse for emailf orm
      * @return true is the string is in correct form, false otherwise
      */
-    private boolean correctEmailForm(String email){
+    private boolean correctEmailForm(){
         String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
-        return email.matches(regex);
+        String text = usernameInput.getText().toString().trim();
+
+        if (!text.matches(regex)) {
+            usernameLayout.setError(getString(R.string.err_msg_email));
+            return false;
+        } else {
+            usernameLayout.setErrorEnabled(false);
+        }
+
+        return true;
     }
 
     /**
      * Verifies a password being:
      * - at least 8 chars
      * - has at least one letter, number and special character
-     * @param pwd - the string to parse
      * @return true if valid password, false if not
      */
-    private boolean correctPasswordForm(String pwd) {
+    private boolean correctPasswordForm() {
         String regex = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$";
-        return pwd.matches(regex);
+        String text = passwordInput.getText().toString().trim();
+
+        if (!text.matches(regex)) {
+            passwordLayout.setError(getString(R.string.err_msg_password));
+            return false;
+        } else {
+            passwordLayout.setErrorEnabled(false);
+        }
+
+        return true;
     }
 
     /**
@@ -303,10 +356,31 @@ public class LoginMenu extends AppCompatActivity {
         outState.putString(BUNDLE_PASSWORD, passwordInput.getText().toString());
     }
 
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        usernameInput.setText(savedInstanceState.getString(BUNDLE_USERNAME));
-        passwordInput.setText(savedInstanceState.getString(BUNDLE_PASSWORD));
+    private class MyTextWatcher implements TextWatcher {
+
+        private View view;
+
+        private MyTextWatcher(View view) {
+            this.view = view;
+        }
+
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void afterTextChanged(Editable editable) {
+            switch (view.getId()) {
+                case R.id.usernameInput:
+                    if(usernameInput.getText().toString().length() != 0)
+                        correctEmailForm();
+                    break;
+                case R.id.passwordInput:
+                    if(passwordInput.getText().toString().length() != 0)
+                        correctPasswordForm();
+                    break;
+            }
+        }
     }
 }

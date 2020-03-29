@@ -31,4 +31,8 @@
     <string name="email">Email</string>
     <string name="signOut">Sign Out</string>
     <string name="createAccount">Create Account</string>
+    <string name="err_msg_password">Password must be at least 8 characters, with at least one of each: number, letter, special symbol.</string>
+    <string name="err_msg_email">Email is not a valid form.</string>
+    <string name="err_msg_incorrect_any">Username or password is incorrect.</string>
+    <string name="app_title">Ski Lift</string>
 </resources>
