@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-public class Account extends AppCompatActivity {
+public class AccountPage extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 

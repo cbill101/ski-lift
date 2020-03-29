@@ -59,10 +59,11 @@
 
     <Button
         android:id="@+id/loginButton"
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/login"
+        android:backgroundTint="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="@+id/passwordInputLayout"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/passwordInputLayout"
@@ -70,12 +71,11 @@
 
     <Button
         android:id="@+id/createAccountButton"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="wrap_content"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/createAccount"
-        android:textColor="#ffff"
+        android:backgroundTint="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="@+id/googleLoginButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/googleLoginButton"
