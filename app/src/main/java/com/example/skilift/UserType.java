@@ -7,9 +7,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
 public class UserType extends AppCompatActivity {
     private Button requesterButton;
     private Button providerButton;
@@ -37,7 +34,7 @@ public class UserType extends AppCompatActivity {
 
     //Open maps page
     private void openRideList() {
-        Intent intent = new Intent(this, RideList.class);
+        Intent intent = new Intent(this, RideListActivity.class);
         startActivity(intent);
     }
 

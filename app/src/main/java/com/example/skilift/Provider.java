@@ -2,7 +2,8 @@ package com.example.skilift;
 
 import java.util.Map;
 
-public class Information {
+public class Provider {
+    private String uID;
     private String name;
     private String phone;
     private String price;
@@ -10,11 +11,11 @@ public class Information {
     private double longitude;
     private String placeName;
 
-    public Information(){
+    public Provider(){
 
     }
 
-    public Information(Map<String, Object> dbData) {
+    public Provider(Map<String, Object> dbData) {
         this.name = (String) dbData.get("name");
         this.phone = (String) dbData.get("phone");
         this.price = (String) dbData.get("price");
@@ -23,7 +24,7 @@ public class Information {
         this.placeName = (String) dbData.get("place_name");
     }
 
-    public Information(String name, String phone, double latitude, double longitude, String placeName, String price){
+    public Provider(String name, String phone, double latitude, double longitude, String placeName, String price){
         this.name = name;
         this.phone = phone;
         this.price = price;
@@ -78,5 +79,20 @@ public class Information {
 
     public void setPlaceName(String placeName) {
         this.placeName = placeName;
+    }
+
+    public String getUID() { return uID; };
+
+    public void setUID(String uID) { this.uID = uID; }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Name: ").append(name).append("\r\n");
+        sb.append("Phone: ").append(phone).append("\r\n");
+        sb.append("Price: $").append(price).append("\r\n");
+        sb.append("Destination: ").append(placeName);
+
+        return sb.toString();
     }
 }

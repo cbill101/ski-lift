@@ -20,7 +20,7 @@
         <activity android:name=".AccountPage" />
         <activity android:name=".Communicate" />
         <activity android:name=".Payment" />
-        <activity android:name=".RideList" />
+        <activity android:name=".RideListActivity" />
         <activity android:name=".Wait" />
         <activity android:name=".Info" />
         <activity android:name=".MainActivity" />
