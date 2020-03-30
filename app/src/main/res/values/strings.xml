@@ -40,4 +40,5 @@
     <string name="create">Create</string>
     <string name="finish">Finish</string>
     <string name="finishAccount">Finish Creation</string>
+    <string name="confirm_destination">Confirm Destination</string>
 </resources>

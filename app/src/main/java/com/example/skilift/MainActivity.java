@@ -35,6 +35,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private PlacesClient gmapPlacesClient;
     private AutocompleteSupportFragment autocompleteFragment;
     private Marker marker;
+    private Button confirmDest;
+    private Place currentSelection;
 
     public static final int LOCATION_REQUEST = 0;
     private static final int AUTOCOMPLETE_REQUEST = 1;
@@ -77,6 +80,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
+
+        confirmDest = findViewById(R.id.confirmDestinationButton);
+        confirmDest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                confirmSelectionAndProceed();
+            }
+        });
 
         mainActBundle = new Bundle();
 
@@ -240,6 +251,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         requestLocationPerms();
     }
 
+    private void confirmSelectionAndProceed() {
+        Intent intent = new Intent(this, Info.class);
+        intent.putExtra("Latitude", marker.getPosition().latitude);
+        intent.putExtra("Longitude", marker.getPosition().longitude);
+        intent.putExtra("PlaceName", currentSelection.getName());
+        startActivity(intent);
+    }
+
     private void initAutocomplete() {
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME));
         autocompleteFragment.setTypeFilter(TypeFilter.ESTABLISHMENT);
@@ -249,9 +268,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onPlaceSelected(Place place) {
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+                currentSelection = place;
                 centreMapOnLocation(place);
                 marker.setPosition(place.getLatLng());
                 marker.setVisible(true);
+                confirmDest.setVisibility(View.VISIBLE);
             }
 
             @Override

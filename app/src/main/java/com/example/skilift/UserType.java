@@ -30,7 +30,7 @@ public class UserType extends AppCompatActivity {
         providerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openInfo();
+                openMap();
             }
         });
     }
@@ -42,8 +42,8 @@ public class UserType extends AppCompatActivity {
     }
 
     //Open info page
-    private void openInfo() {
-        Intent intent = new Intent(this, Info.class);
+    private void openMap() {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 }

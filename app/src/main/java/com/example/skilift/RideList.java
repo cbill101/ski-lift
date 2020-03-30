@@ -12,11 +12,18 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -45,25 +52,23 @@ public class RideList extends AppCompatActivity {
         final ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.list_item, list);
         listView.setAdapter(adapter);
 
-        // Retrieve vals from db and display
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Providers");
-        reference.addValueEventListener(new ValueEventListener() {
+        CollectionReference dRef = FirebaseFirestore.getInstance().collection("Providers");
+
+        dRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                list.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Information info = snapshot.getValue(Information.class);
-                    String infoRow = "Name: " + info.getName() +
-                            "\nPhone: " + info.getPhone() +
-                            "\nPrice: " + info.getPrice();
-                    list.add(infoRow);
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    list.clear();
+                    for(QueryDocumentSnapshot document : task.getResult()) {
+                        Information info = new Information(document.getData());
+                        String infoRow = "Name: " + info.getName() +
+                                "\nPhone: " + info.getPhone() +
+                                "\nPrice: " + info.getPrice() +
+                                "\nDestination: " + info.getPlaceName();
+                        list.add(infoRow);
+                    }
+                    adapter.notifyDataSetChanged();
                 }
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
