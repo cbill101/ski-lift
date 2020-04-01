@@ -58,7 +58,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private AutocompleteSupportFragment autocompleteFragment;
     private Marker marker;
     private Button confirmDest;
+    private Button pickFromList;
     private Place currentSelection;
+    private boolean isProvider;
 
     public static final int LOCATION_REQUEST = 0;
     private static final int AUTOCOMPLETE_REQUEST = 1;
@@ -81,11 +83,37 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
+        Intent intent = getIntent();
+        String userType = intent.getStringExtra("UserType");
+
         confirmDest = findViewById(R.id.confirmDestinationButton);
+        pickFromList = findViewById(R.id.pickFromListButton);
+
+        if(userType != null) {
+            switch (userType) {
+                case "Provider":
+                    isProvider = true;
+                    pickFromList.setText(getText(R.string.pick_a_request));
+                    break;
+                case "Requester":
+                    isProvider = false;
+                    pickFromList.setText(getText(R.string.pick_a_ride));
+                    break;
+            }
+        }
+
+
         confirmDest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 confirmSelectionAndProceed();
+            }
+        });
+
+        pickFromList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickFromList();
             }
         });
 
@@ -253,9 +281,20 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void confirmSelectionAndProceed() {
         Intent intent = new Intent(this, Info.class);
-        intent.putExtra("Latitude", marker.getPosition().latitude);
-        intent.putExtra("Longitude", marker.getPosition().longitude);
+        intent.putExtra("DestLatitude", marker.getPosition().latitude);
+        intent.putExtra("DestLongitude", marker.getPosition().longitude);
+
+        if(!isProvider)
+            intent.putExtra("PickupLocation", getLastKnownLoc());
+
         intent.putExtra("PlaceName", currentSelection.getName());
+        intent.putExtra("Provider", isProvider);
+        startActivity(intent);
+    }
+
+    private void pickFromList() {
+        Intent intent = new Intent(this, RideListActivity.class);
+        intent.putExtra("Provider", isProvider);
         startActivity(intent);
     }
 

@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,8 +29,9 @@ public class RideListActivity extends AppCompatActivity {
     private ListView listView;
     private FirebaseAuth mAuth;
     private ArrayList<Provider> rideList;
-    private ArrayAdapter adapter;
-    private String selectedProviderID;
+    private ArrayList<RideRequest> requestList;
+    private ArrayAdapter rideAdapter;
+    private boolean isProvider;
 
     private RadioButton listRadioButton = null;
     int listIndex = -1;
@@ -45,7 +47,10 @@ public class RideListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(listRadioButton != null) {
-                    openPayment();
+                    if(isProvider)
+                        openWaitScreen();
+                    else
+                        openPayment();
                 }
                 else {
                     Toast.makeText(getApplicationContext(), "Must select a ride.", Toast.LENGTH_SHORT).show();
@@ -55,27 +60,74 @@ public class RideListActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        Intent intent = getIntent();
+        isProvider = intent.getBooleanExtra("Provider", false);
+
+        TextView descText = findViewById(R.id.textView);
+
+        if(isProvider) {
+            descText.setText(R.string.list_of_requests);
+            confirmButton.setText(R.string.confirm);
+        }
+
         // Array list to save from db
         rideList = new ArrayList<>();
-        adapter = new ArrayAdapter<Provider>(this, R.layout.list_item, rideList);
-        listView.setAdapter(adapter);
+        requestList = new ArrayList<>();
 
-        CollectionReference dRef = FirebaseFirestore.getInstance().collection("Providers");
+        getContextualList();
+    }
 
-        dRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()) {
-                    rideList.clear();
-                    for(QueryDocumentSnapshot document : task.getResult()) {
-                        Provider info = new Provider(document.getData());
-                        info.setUID(document.getId());
-                        rideList.add(info);
+    private void getContextualList() {
+        CollectionReference dRef;
+
+        if(isProvider) {
+            dRef = FirebaseFirestore.getInstance().collection("Requests");
+            rideAdapter = new ArrayAdapter<>(this, R.layout.list_item, requestList);
+            listView.setAdapter(rideAdapter);
+
+            dRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()) {
+                        requestList.clear();
+                        for(QueryDocumentSnapshot document : task.getResult()) {
+                            if(document.exists())
+                            {
+                                RideRequest info = new RideRequest(document.getData());
+                                info.setUID(document.getId());
+                                requestList.add(info);
+                            }
+                        }
+                        rideAdapter.notifyDataSetChanged();
                     }
-                    adapter.notifyDataSetChanged();
                 }
-            }
-        });
+            });
+        }
+        else {
+            dRef = FirebaseFirestore.getInstance().collection("Providers");
+
+            rideAdapter = new ArrayAdapter<>(this, R.layout.list_item, rideList);
+            listView.setAdapter(rideAdapter);
+
+            dRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()) {
+                        rideList.clear();
+                        for(QueryDocumentSnapshot document : task.getResult()) {
+                            if(document.exists())
+                            {
+                                Provider info = new Provider(document.getData());
+                                info.setUID(document.getId());
+                                rideList.add(info);
+                            }
+                        }
+                        rideAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+
     }
 
     public void onClickRadioButton(View v) {
@@ -95,9 +147,16 @@ public class RideListActivity extends AppCompatActivity {
     }
 
     //For now goes to next page
+    private void openWaitScreen() {
+        Intent intent = new Intent(this, Wait.class);
+        intent.putExtra("requestUID", requestList.get(listIndex).getUID());
+        startActivity(intent);
+    }
+
+    //For now goes to next page
     private void openPayment() {
         Intent intent = new Intent(this, Payment.class);
-
+        intent.putExtra("providerUID", rideList.get(listIndex).getUID());
         startActivity(intent);
     }
 }

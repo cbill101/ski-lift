@@ -24,16 +24,24 @@
         android:layout_height="wrap_content"
         android:text="@string/confirm_destination"
         android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mapView" />
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/pickFromListButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/confirmDestinationButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="50dp"
         android:clickable="true"
         android:enabled="true"
         android:focusable="true"
@@ -53,7 +61,7 @@
         android:focusable="true"
         app:backgroundTint="@color/colorPrimary"
         app:fabSize="mini"
-        app:layout_constraintBottom_toBottomOf="@+id/mapView"
+        app:layout_constraintBottom_toTopOf="@+id/pickFromListButton"
         app:layout_constraintEnd_toEndOf="@+id/mapView"
         app:srcCompat="@android:drawable/ic_menu_mylocation" />
 

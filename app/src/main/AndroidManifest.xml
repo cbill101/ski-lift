@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".FinishGoogleAccount"></activity>
+        <activity android:name=".ChatHistoryActivity"></activity>
+        <activity android:name=".FinishGoogleAccount" />
         <activity
             android:name=".CreateAccountActivity"
             android:windowSoftInputMode="stateUnchanged|adjustResize" />
@@ -25,7 +26,6 @@
         <activity android:name=".Info" />
         <activity android:name=".MainActivity" />
         <activity android:name=".UserType" />
-
         <activity
             android:name=".LoginMenu"
             android:windowSoftInputMode="stateUnchanged|adjustResize">

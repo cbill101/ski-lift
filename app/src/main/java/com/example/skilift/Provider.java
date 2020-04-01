@@ -88,8 +88,7 @@ public class Provider {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Name: ").append(name).append("\r\n");
-        sb.append("Phone: ").append(phone).append("\r\n");
+        sb.append("Name: ").append(name.substring(0, name.indexOf(' '))).append("\r\n");
         sb.append("Price: $").append(price).append("\r\n");
         sb.append("Destination: ").append(placeName);
 

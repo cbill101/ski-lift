@@ -41,4 +41,8 @@
     <string name="finish">Finish</string>
     <string name="finishAccount">Finish Creation</string>
     <string name="confirm_destination">Confirm Destination</string>
+    <string name="chat_history">Chat History</string>
+    <string name="pick_a_ride">Pick a Ride</string>
+    <string name="pick_a_request">Pick a Request</string>
+    <string name="list_of_requests">List of Requests</string>
 </resources>

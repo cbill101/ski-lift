@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,11 +17,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.type.LatLng;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +36,8 @@ public class Info extends AppCompatActivity {
     private EditText priceInput;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+    private Location pickupLocation;
+    private boolean isProvider;
 
     private double placeLatitude;
     private double placeLongitude;
@@ -63,15 +64,18 @@ public class Info extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                insertRide();
+                insertInfo();
             }
         });
 
         Intent intent = getIntent();
 
-        placeLatitude = intent.getDoubleExtra("Latitude", 0);
-        placeLongitude = intent.getDoubleExtra("Longitude", 0);
+        placeLatitude = intent.getDoubleExtra("DestLatitude", 0);
+        placeLongitude = intent.getDoubleExtra("DestLongitude", 0);
         placeName = intent.getStringExtra("PlaceName");
+        isProvider = intent.getBooleanExtra("Provider", false);
+        // could be null.
+        pickupLocation = intent.getParcelableExtra("PickupLocation");
 
         mAuth = FirebaseAuth.getInstance();
     }
@@ -83,14 +87,15 @@ public class Info extends AppCompatActivity {
     }
 
     //Anderson put the stuff you need to have happen when the button is pressed here
-    private void insertRide() {
+    private void insertInfo() {
         DocumentReference dRec = db.collection("users").document(mAuth.getCurrentUser().getUid());
 
         // Check for empty fields
-        if(priceInput.getText().toString().isEmpty()){
-            Toast.makeText(Info.this, "Please enter info in all fields", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        if(isProvider)
+            if(priceInput.getText().toString().isEmpty()){
+                Toast.makeText(Info.this, "Please enter info in all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
         dRec.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -109,8 +114,12 @@ public class Info extends AppCompatActivity {
                         provInfoMap.put("phone", user.getPhone());
                         provInfoMap.put("dest_latitude", placeLatitude);
                         provInfoMap.put("dest_longitude", placeLongitude);
+                        provInfoMap.put("pickup_latitude", pickupLocation.getLatitude());
+                        provInfoMap.put("pickup_longitude", pickupLocation.getLongitude());
                         provInfoMap.put("place_name", placeName);
-                        provInfoMap.put("price", price);
+
+                        if(isProvider)
+                            provInfoMap.put("price", price);
 
                         finishInsertRide(provInfoMap);
                     }
@@ -124,7 +133,8 @@ public class Info extends AppCompatActivity {
 
     private void finishInsertRide(Map<String, Object> provInfoMap) {
         // Save to db
-        db.collection("Providers")
+        if(isProvider)
+            db.collection("Providers")
                 .document(mAuth.getCurrentUser().getUid())
                 .set(provInfoMap)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -139,6 +149,22 @@ public class Info extends AppCompatActivity {
                         Log.w(TAG, "insertRide: Error writing user document: ", e);
                     }
                 });
+        else
+            db.collection("Requests")
+                    .document(mAuth.getCurrentUser().getUid())
+                    .set(provInfoMap)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "insertRide: added ride info successfully to firestore.");
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "insertRide: Error writing user document: ", e);
+                        }
+                    });
 
         Toast.makeText(Info.this, "Info saved!", Toast.LENGTH_SHORT).show();
     }

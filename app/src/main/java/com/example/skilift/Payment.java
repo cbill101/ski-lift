@@ -10,6 +10,7 @@ import android.widget.Button;
 //Evan do your stuff here
 public class Payment extends AppCompatActivity {
     private Button nextPageButton;
+    private String providerUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +24,9 @@ public class Payment extends AppCompatActivity {
                 openCommunicate();
             }
         });
+
+        Intent intent = getIntent();
+        providerUID = intent.getStringExtra("providerUID");
     }
 
     //For now goes to next page
