@@ -90,12 +90,10 @@ public class Info extends AppCompatActivity {
     private void insertInfo() {
         DocumentReference dRec = db.collection("users").document(mAuth.getCurrentUser().getUid());
 
-        // Check for empty fields
-        if(isProvider)
-            if(priceInput.getText().toString().isEmpty()){
-                Toast.makeText(Info.this, "Please enter info in all fields", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        if(priceInput.getText().toString().isEmpty()){
+            Toast.makeText(Info.this, "Please enter info in all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         dRec.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -114,12 +112,15 @@ public class Info extends AppCompatActivity {
                         provInfoMap.put("phone", user.getPhone());
                         provInfoMap.put("dest_latitude", placeLatitude);
                         provInfoMap.put("dest_longitude", placeLongitude);
-                        provInfoMap.put("pickup_latitude", pickupLocation.getLatitude());
-                        provInfoMap.put("pickup_longitude", pickupLocation.getLongitude());
-                        provInfoMap.put("place_name", placeName);
 
-                        if(isProvider)
-                            provInfoMap.put("price", price);
+                        if(pickupLocation != null)
+                        {
+                            provInfoMap.put("pickup_latitude", pickupLocation.getLatitude());
+                            provInfoMap.put("pickup_longitude", pickupLocation.getLongitude());
+                        }
+
+                        provInfoMap.put("place_name", placeName);
+                        provInfoMap.put("price", price);
 
                         finishInsertRide(provInfoMap);
                     }
@@ -156,7 +157,7 @@ public class Info extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "insertRide: added ride info successfully to firestore.");
+                            Log.d(TAG, "insertRide: added request info successfully to firestore.");
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {

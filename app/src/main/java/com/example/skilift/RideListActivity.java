@@ -79,6 +79,8 @@ public class RideListActivity extends AppCompatActivity {
             confirmButton.setText(R.string.confirm);
         }
 
+        confirmButton.setVisibility(Button.INVISIBLE);
+
         // Array list to save from db
         rideList = new ArrayList<>();
         requestList = new ArrayList<>();
@@ -125,7 +127,8 @@ public class RideListActivity extends AppCompatActivity {
 
                 @Override
                 public void afterTextChanged(Editable s) {
-
+                    String search = s.toString();
+                    rideAdapter.getFilter().filter(search);
                 }
             });
         }
@@ -183,9 +186,11 @@ public class RideListActivity extends AppCompatActivity {
         listRadioButton = (RadioButton) v;
         // find if the new one is checked or not, and set "listIndex"
         if (listRadioButton.isChecked()) {
+            confirmButton.setVisibility(Button.VISIBLE);
             listIndex = ((ViewGroup) vMain.getParent()).indexOfChild(vMain);
         } else {
             listRadioButton = null;
+            confirmButton.setVisibility(Button.INVISIBLE);
             listIndex = -1;
         }
     }
@@ -226,6 +231,7 @@ public class RideListActivity extends AppCompatActivity {
 
         public void notifyDataSetChanged() {
             super.notifyDataSetChanged();
+            confirmButton.setVisibility(Button.INVISIBLE);
             listRadioButton = null;
         }
 
