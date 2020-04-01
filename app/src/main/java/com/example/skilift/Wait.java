@@ -24,7 +24,7 @@ public class Wait extends AppCompatActivity {
 
     //Open maps page
     private void openMaps() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, UserType.class);
         startActivity(intent);
     }
 }

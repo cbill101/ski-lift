@@ -21,7 +21,7 @@
     <string name="phone_number">Phone Number</string>
     <string name="price">Price</string>
     <string name="waiting_for_requester">Waiting for requester</string>
-    <string name="list_of_rides">List of rides</string>
+    <string name="list_of_rides">Ride List</string>
     <string name="confirm_and_pay">Confirm and pay</string>
     <string name="received_text">Received Text</string>
     <string name="coordinate_ride_nthrough_text">Coordinate ride\nthrough text</string>
@@ -45,4 +45,5 @@
     <string name="pick_a_ride">Pick a Ride</string>
     <string name="pick_a_request">Pick a Request</string>
     <string name="list_of_requests">List of Requests</string>
+    <string name="filterHint">Search</string>
 </resources>

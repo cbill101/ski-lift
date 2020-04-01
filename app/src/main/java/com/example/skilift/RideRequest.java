@@ -10,6 +10,7 @@ public class RideRequest {
     private double destLongitude;
     private double pickupLatitude;
     private double pickupLongitude;
+    private String price;
     private String destName;
 
     public RideRequest(){
@@ -24,14 +25,7 @@ public class RideRequest {
         this.pickupLatitude = (double) dbData.get("pickup_latitude");
         this.pickupLongitude = (double) dbData.get("pickup_longitude");
         this.destName = (String) dbData.get("place_name");
-    }
-
-    public RideRequest(String name, String phone, double latitude, double longitude, String placeName){
-        this.name = name;
-        this.phone = phone;
-        this.destLatitude = latitude;
-        this.destLongitude = longitude;
-        this.destName = placeName;
+        this.price = (String) dbData.get("price");
     }
 
     public String getName() {
@@ -56,6 +50,15 @@ public class RideRequest {
 
     public void setDestLatitude(double destLatitude) {
         this.destLatitude = destLatitude;
+    }
+
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public double getDestLongitude() {
@@ -98,7 +101,8 @@ public class RideRequest {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Name: ").append(name.substring(0, name.indexOf(' '))).append("\r\n");
-        sb.append("Destination: ").append(destName);
+        sb.append("Destination: ").append(destName).append("\r\n");
+        sb.append("Price: $").append(price);
 
         return sb.toString();
     }

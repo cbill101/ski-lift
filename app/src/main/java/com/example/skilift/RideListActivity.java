@@ -3,12 +3,18 @@ package com.example.skilift;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -23,10 +29,12 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RideListActivity extends AppCompatActivity {
     private Button confirmButton;
     private ListView listView;
+    private EditText searchQueryText;
     private FirebaseAuth mAuth;
     private ArrayList<Provider> rideList;
     private ArrayList<RideRequest> requestList;
@@ -58,6 +66,7 @@ public class RideListActivity extends AppCompatActivity {
             }
         });
 
+        searchQueryText = findViewById(R.id.filterTextInput);
         mAuth = FirebaseAuth.getInstance();
 
         Intent intent = getIntent();
@@ -82,7 +91,7 @@ public class RideListActivity extends AppCompatActivity {
 
         if(isProvider) {
             dRef = FirebaseFirestore.getInstance().collection("Requests");
-            rideAdapter = new ArrayAdapter<>(this, R.layout.list_item, requestList);
+            rideAdapter = new ResultAdapter<>(this, R.layout.list_item, requestList);
             listView.setAdapter(rideAdapter);
 
             dRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -102,11 +111,28 @@ public class RideListActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            searchQueryText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
         }
         else {
             dRef = FirebaseFirestore.getInstance().collection("Providers");
 
-            rideAdapter = new ArrayAdapter<>(this, R.layout.list_item, rideList);
+            rideAdapter = new ResultAdapter<>(this, R.layout.list_item, rideList);
             listView.setAdapter(rideAdapter);
 
             dRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -124,6 +150,24 @@ public class RideListActivity extends AppCompatActivity {
                         }
                         rideAdapter.notifyDataSetChanged();
                     }
+                }
+            });
+
+            searchQueryText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    String search = s.toString();
+                    rideAdapter.getFilter().filter(search);
                 }
             });
         }
@@ -158,5 +202,78 @@ public class RideListActivity extends AppCompatActivity {
         Intent intent = new Intent(this, Payment.class);
         intent.putExtra("providerUID", rideList.get(listIndex).getUID());
         startActivity(intent);
+    }
+
+    private class ResultAdapter<T> extends ArrayAdapter<T> implements Filterable {
+
+        private List<T> listItems;
+        private List<T> filteredItems;
+        private Filter providerFilter;
+
+        public ResultAdapter(@NonNull Context context, int resource, @NonNull List<T> objects) {
+            super(context, resource, objects);
+            listItems = objects;
+            filteredItems = objects;
+        }
+
+        public int getCount() {
+            return filteredItems.size();
+        }
+
+        public T getItem(int position) {
+            return filteredItems.get(position);
+        }
+
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+            listRadioButton = null;
+        }
+
+        @NonNull
+        @Override
+        public Filter getFilter() {
+
+            return new Filter() {
+
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    FilterResults results = new FilterResults();
+                    String constr = constraint.toString().toLowerCase().trim();
+                    ArrayList<Object> filterProviders = new ArrayList<>();
+
+                    for(int index = 0; index < listItems.size(); index++) {
+                        T prov = listItems.get(index);
+                        if(prov instanceof Provider) {
+                            Provider p = (Provider) prov;
+
+                            if(p.getName().toLowerCase().contains(constr)
+                                    || p.getPlaceName().toLowerCase().contains(constr)
+                                    || p.getPrice().toLowerCase().contains(constr)) {
+                                filterProviders.add(p);
+                            }
+                        }
+                        else if (prov instanceof RideRequest) {
+                            RideRequest rr = (RideRequest) prov;
+                            if(rr.getName().toLowerCase().contains(constr)
+                                    || rr.getDestName().toLowerCase().contains(constr)
+                                    || rr.getPrice().toLowerCase().contains(constr)) {
+                                filterProviders.add(rr);
+                            }
+                        }
+                    }
+
+                    results.count = filterProviders.size();
+                    results.values = filterProviders;
+
+                    return results;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    filteredItems = (List<T>) results.values;
+                    notifyDataSetChanged();
+                }
+            };
+        }
     }
 }
