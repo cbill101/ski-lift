@@ -52,7 +52,7 @@ public class LoginMenu extends OnboardingCommon {
 
     private Button loginButton;
     private Button createAccountButton;
-    private SignInButton gsoButton;
+    private Button gsoButton;
 
     private EditText passwordInput;
     private EditText usernameInput;
@@ -110,6 +110,7 @@ public class LoginMenu extends OnboardingCommon {
 
         loginButton.setBackground(getDrawable(R.drawable.button_default));
         createAccountButton.setBackground(getDrawable(R.drawable.button_outlined));
+        gsoButton.setBackground(getDrawable(R.drawable.button_default));
     }
 
     @Override
