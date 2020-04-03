@@ -13,23 +13,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Account"></activity>
+        <activity android:name=".FinishGoogleAccount"></activity>
+        <activity
+            android:name=".CreateAccountActivity"
+            android:windowSoftInputMode="stateUnchanged|adjustResize" />
+        <activity android:name=".AccountPage" />
         <activity android:name=".Communicate" />
         <activity android:name=".Payment" />
-        <activity android:name=".RideList" />
+        <activity android:name=".RideListActivity" />
         <activity android:name=".Wait" />
         <activity android:name=".Info" />
         <activity android:name=".MainActivity" />
         <activity android:name=".UserType" />
 
-        <service
-            android:name=".SLLocationService"
-            android:enabled="true"
-            android:exported="true" />
-
         <activity
             android:name=".LoginMenu"
-            android:configChanges="screenSize">
+            android:windowSoftInputMode="stateUnchanged|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

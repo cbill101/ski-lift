@@ -30,4 +30,15 @@
     <string name="googleApiKey">AIzaSyD3t1r5hxMOVfPiBphOuTmJhErcHO0m-Pg</string>
     <string name="email">Email</string>
     <string name="signOut">Sign Out</string>
+    <string name="createAccount">Create Account</string>
+    <string name="err_msg_password">Password must be at least 8 characters, with at least one of each: number, letter, special symbol.</string>
+    <string name="err_msg_email">Email is not a valid form.</string>
+    <string name="err_msg_incorrect_any">Username or password is incorrect.</string>
+    <string name="app_title">Ski Lift</string>
+    <string name="phone">Phone</string>
+    <string name="confirm">Confirm</string>
+    <string name="create">Create</string>
+    <string name="finish">Finish</string>
+    <string name="finishAccount">Finish Creation</string>
+    <string name="confirm_destination">Confirm Destination</string>
 </resources>

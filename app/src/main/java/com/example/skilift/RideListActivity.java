@@ -5,25 +5,31 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
-public class RideList extends AppCompatActivity {
+public class RideListActivity extends AppCompatActivity {
     private Button confirmButton;
     private ListView listView;
+    private FirebaseAuth mAuth;
+    private ArrayList<Provider> rideList;
+    private ArrayAdapter adapter;
+    private String selectedProviderID;
 
     private RadioButton listRadioButton = null;
     int listIndex = -1;
@@ -37,34 +43,37 @@ public class RideList extends AppCompatActivity {
         listView = findViewById(R.id.listView);
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { openPayment();
+            public void onClick(View v) {
+                if(listRadioButton != null) {
+                    openPayment();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Must select a ride.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
+        mAuth = FirebaseAuth.getInstance();
+
         // Array list to save from db
-        final ArrayList<String> list = new ArrayList<>();
-        final ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.list_item, list);
+        rideList = new ArrayList<>();
+        adapter = new ArrayAdapter<Provider>(this, R.layout.list_item, rideList);
         listView.setAdapter(adapter);
 
-        // Retrieve vals from db and display
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Providers");
-        reference.addValueEventListener(new ValueEventListener() {
+        CollectionReference dRef = FirebaseFirestore.getInstance().collection("Providers");
+
+        dRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                list.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Information info = snapshot.getValue(Information.class);
-                    String infoRow = "Name: " + info.getName() +
-                            "\nPhone: " + info.getPhone() +
-                            "\nPrice: " + info.getPrice();
-                    list.add(infoRow);
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    rideList.clear();
+                    for(QueryDocumentSnapshot document : task.getResult()) {
+                        Provider info = new Provider(document.getData());
+                        info.setUID(document.getId());
+                        rideList.add(info);
+                    }
+                    adapter.notifyDataSetChanged();
                 }
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
@@ -88,10 +97,7 @@ public class RideList extends AppCompatActivity {
     //For now goes to next page
     private void openPayment() {
         Intent intent = new Intent(this, Payment.class);
-        String[] info = listRadioButton.getText().toString().split("\\n");
-        String[] price = info[2].split(" ");
-            Log.d("price", price[1]);
-        intent.putExtra("price",Double.parseDouble(price[1]));
+
         startActivity(intent);
     }
 }

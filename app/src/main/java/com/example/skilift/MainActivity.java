@@ -1,15 +1,11 @@
 package com.example.skilift;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,7 +14,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationListener;
@@ -29,25 +24,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.libraries.places.api.Places;
 
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.os.Build;
-import android.provider.Settings;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -56,9 +44,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.io.IOException;
-import java.security.Security;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -72,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private PlacesClient gmapPlacesClient;
     private AutocompleteSupportFragment autocompleteFragment;
     private Marker marker;
+    private Button confirmDest;
+    private Place currentSelection;
 
     public static final int LOCATION_REQUEST = 0;
     private static final int AUTOCOMPLETE_REQUEST = 1;
@@ -93,6 +80,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
+
+        confirmDest = findViewById(R.id.confirmDestinationButton);
+        confirmDest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                confirmSelectionAndProceed();
+            }
+        });
 
         mainActBundle = new Bundle();
 
@@ -126,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.account:
-                startActivity(new Intent(this, Account.class));
+                startActivity(new Intent(this, AccountPage.class));
                 return true;
             case R.id.help:
                 return true;
@@ -256,6 +251,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         requestLocationPerms();
     }
 
+    private void confirmSelectionAndProceed() {
+        Intent intent = new Intent(this, Info.class);
+        intent.putExtra("Latitude", marker.getPosition().latitude);
+        intent.putExtra("Longitude", marker.getPosition().longitude);
+        intent.putExtra("PlaceName", currentSelection.getName());
+        startActivity(intent);
+    }
+
     private void initAutocomplete() {
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME));
         autocompleteFragment.setTypeFilter(TypeFilter.ESTABLISHMENT);
@@ -265,9 +268,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void onPlaceSelected(Place place) {
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+                currentSelection = place;
                 centreMapOnLocation(place);
                 marker.setPosition(place.getLatLng());
                 marker.setVisible(true);
+                confirmDest.setVisibility(View.VISIBLE);
             }
 
             @Override

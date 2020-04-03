@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "997206950193-n6uihnd118pali9hik4uat1p0sd1l0p4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.skilift",
+            "certificate_hash": "77b7a7adddfcb79c8663891319f49a804d99e66d"
+          }
+        },
+        {
+          "client_id": "997206950193-embike3tnga0g1rksffjjthbbc6efbvr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.skilift",
+            "certificate_hash": "ceedd2841785a1928b15b520b890f378744fcb1a"
+          }
+        },
+        {
           "client_id": "997206950193-a26d9asld61enopm9etjagekrcdnv4c9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

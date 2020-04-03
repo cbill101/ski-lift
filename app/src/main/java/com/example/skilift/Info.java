@@ -5,29 +5,49 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.type.LatLng;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Info extends AppCompatActivity {
     private static final String BUNDLE_NAME = "";
     private static final String BUNDLE_PHONE = "";
     private static final String BUNDLE_PRICE = "";
+    private static final String TAG = "Info";
     private Button nextPageButton;
     private Button sendButton;
     private EditText nameInput;
     private EditText phoneInput;
     private EditText priceInput;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+
+    private double placeLatitude;
+    private double placeLongitude;
+    private String placeName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
+
+        db = FirebaseFirestore.getInstance();
 
         nextPageButton = findViewById(R.id.finishedButton);
         sendButton = findViewById(R.id.sendButton);
@@ -43,9 +63,17 @@ public class Info extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AndersonStuff();
+                insertRide();
             }
         });
+
+        Intent intent = getIntent();
+
+        placeLatitude = intent.getDoubleExtra("Latitude", 0);
+        placeLongitude = intent.getDoubleExtra("Longitude", 0);
+        placeName = intent.getStringExtra("PlaceName");
+
+        mAuth = FirebaseAuth.getInstance();
     }
 
     //For now goes to next page
@@ -55,29 +83,64 @@ public class Info extends AppCompatActivity {
     }
 
     //Anderson put the stuff you need to have happen when the button is pressed here
-    private void AndersonStuff() {
-        // Get text from fields
-        String name = nameInput.getText().toString();
-        String phone = phoneInput.getText().toString();
-        String price = priceInput.getText().toString();
-
-        // Save provider info into a hashmap
-        HashMap<String, Object> provInfoMap = new HashMap<>();
-        provInfoMap.put("name", name);
-        provInfoMap.put("phone", phone);
-        provInfoMap.put("price", price);
+    private void insertRide() {
+        DocumentReference dRec = db.collection("users").document(mAuth.getCurrentUser().getUid());
 
         // Check for empty fields
-        if(name.isEmpty() || phone.isEmpty() || price.isEmpty()){
+        if(priceInput.getText().toString().isEmpty()){
             Toast.makeText(Info.this, "Please enter info in all fields", Toast.LENGTH_SHORT).show();
-        } else {
-            // Save to db
-            FirebaseDatabase.getInstance().getReference()
-                    .child("Providers")
-                    .child(provInfoMap.get("name").toString())
-                    .setValue(provInfoMap);
-            Toast.makeText(Info.this, "Info saved!", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        dRec.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()) {
+                    DocumentSnapshot data = task.getResult();
+                    if(data.exists()) {
+                        User user = new User(data.getData());
+                        // Get text from fields
+                        String price = priceInput.getText().toString();
+
+                        // Save provider info into a hashmap
+                        HashMap<String, Object> provInfoMap = new HashMap<>();
+
+                        provInfoMap.put("name", user.getName());
+                        provInfoMap.put("phone", user.getPhone());
+                        provInfoMap.put("dest_latitude", placeLatitude);
+                        provInfoMap.put("dest_longitude", placeLongitude);
+                        provInfoMap.put("place_name", placeName);
+                        provInfoMap.put("price", price);
+
+                        finishInsertRide(provInfoMap);
+                    }
+                }
+                else {
+
+                }
+            }
+        });
+    }
+
+    private void finishInsertRide(Map<String, Object> provInfoMap) {
+        // Save to db
+        db.collection("Providers")
+                .document(mAuth.getCurrentUser().getUid())
+                .set(provInfoMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "insertRide: added ride info successfully to firestore.");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "insertRide: Error writing user document: ", e);
+                    }
+                });
+
+        Toast.makeText(Info.this, "Info saved!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
