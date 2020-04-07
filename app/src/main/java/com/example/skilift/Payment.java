@@ -16,6 +16,7 @@ public class Payment extends AppCompatActivity {
     private EditText date;
     private EditText SC;
     private TextView priceTextView;
+    private String providerUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,12 +24,12 @@ public class Payment extends AppCompatActivity {
         setContentView(R.layout.activity_payment);
         Intent intent = getIntent();
         double price = intent.getDoubleExtra("price",5.0);
+        providerUID = intent.getStringExtra("providerUID");
         CC = findViewById(R.id.editTextCC);
         date = findViewById(R.id.editTextDate);
         SC = findViewById(R.id.editTextSC);
         priceTextView = findViewById(R.id.priceTextView);
         priceTextView.append("Price: $"+String.valueOf(price));
-
 
         nextPageButton = findViewById(R.id.finishedButton);
         nextPageButton.setOnClickListener(new View.OnClickListener() {
