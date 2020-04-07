@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -164,7 +165,11 @@ public abstract class OnboardingCommon extends AppCompatActivity implements Logi
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                passwordLayout.setError(getString(R.string.err_msg_incorrect_any));
+                                if(task.getException().getClass().equals(FirebaseAuthInvalidUserException.class)){
+                                    passwordLayout.setError(getString(R.string.err_msg_no_user));
+                                }else {
+                                    passwordLayout.setError(getString(R.string.err_msg_incorrect_any));
+                                }
                                 requestFocus(passwordLayout);
                                 updateUI(null);
                                 // [START_EXCLUDE]

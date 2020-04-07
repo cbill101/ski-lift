@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,8 +36,11 @@ public class Info extends AppCompatActivity {
     private EditText nameInput;
     private EditText phoneInput;
     private EditText priceInput;
+    private TimePicker startTimeInput;
+    private TimePicker endTimeInput;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+
 
     private double placeLatitude;
     private double placeLongitude;
@@ -54,6 +58,8 @@ public class Info extends AppCompatActivity {
         nameInput = findViewById(R.id.nameInput);
         phoneInput = findViewById(R.id.phoneInput);
         priceInput = findViewById(R.id.priceInput);
+        startTimeInput = findViewById(R.id.startTimePicker);
+        endTimeInput = findViewById(R.id.endTimePicker);
         nextPageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
