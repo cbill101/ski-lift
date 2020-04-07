@@ -47,4 +47,7 @@
     <string name="pick_a_request">Pick a Request</string>
     <string name="list_of_requests">List of Requests</string>
     <string name="filterHint">Search</string>
+    <string name="arrival">Arrival</string>
+    <string name="departure">Departure</string>
+    <string name="pick_time">Pick Time</string>
 </resources>

@@ -2,17 +2,27 @@ package com.example.skilift;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.icu.text.NumberFormat;
+import android.icu.util.Calendar;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.cottacush.android.currencyedittext.CurrencyInputWatcher;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -22,21 +32,22 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class Info extends AppCompatActivity {
-    private static final String BUNDLE_NAME = "";
-    private static final String BUNDLE_PHONE = "";
-    private static final String BUNDLE_PRICE = "";
+    private static final String BUNDLE_PRICE = "price";
+    private static final String BUNDLE_ARRIVAL_TIME = "arrival";
+    private static final String BUNDLE_DEPART_TIME = "depart";
     private static final String TAG = "Info";
     private Button nextPageButton;
     private Button sendButton;
-    private EditText nameInput;
-    private EditText phoneInput;
     private EditText priceInput;
-    private TimePicker startTimeInput;
-    private TimePicker endTimeInput;
+    private TextView arrivalTimeText;
+    private TextView departTimeText;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private Location pickupLocation;
@@ -56,11 +67,9 @@ public class Info extends AppCompatActivity {
 
         nextPageButton = findViewById(R.id.finishedButton);
         sendButton = findViewById(R.id.sendButton);
-        nameInput = findViewById(R.id.nameInput);
-        phoneInput = findViewById(R.id.phoneInput);
         priceInput = findViewById(R.id.priceInput);
-        startTimeInput = findViewById(R.id.startTimePicker);
-        endTimeInput = findViewById(R.id.endTimePicker);
+        arrivalTimeText = findViewById(R.id.arrivalTimeText);
+        departTimeText = findViewById(R.id.departTimeText);
         nextPageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,7 +91,7 @@ public class Info extends AppCompatActivity {
         isProvider = intent.getBooleanExtra("Provider", false);
         // could be null.
         pickupLocation = intent.getParcelableExtra("PickupLocation");
-
+        priceInput.addTextChangedListener(new CurrencyInputWatcher(priceInput, "$", Locale.getDefault()));
         mAuth = FirebaseAuth.getInstance();
     }
 
@@ -179,16 +188,71 @@ public class Info extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(BUNDLE_NAME, nameInput.getText().toString());
-        outState.putString(BUNDLE_PHONE, phoneInput.getText().toString());
         outState.putString(BUNDLE_PRICE, priceInput.getText().toString());
+        outState.putString(BUNDLE_ARRIVAL_TIME, arrivalTimeText.getText().toString());
+        outState.putString(BUNDLE_DEPART_TIME, departTimeText.getText().toString());
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        nameInput.setText(savedInstanceState.getString(BUNDLE_NAME));
-        phoneInput.setText(savedInstanceState.getString(BUNDLE_PHONE));
         priceInput.setText(savedInstanceState.getString(BUNDLE_PRICE));
+        arrivalTimeText.setText(savedInstanceState.getString(BUNDLE_ARRIVAL_TIME));
+        departTimeText.setText(savedInstanceState.getString(BUNDLE_DEPART_TIME));
     }
+
+    public void showArrivalTimePicker(View view) {
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "arrivalTimePicker");
+    }
+
+    public void showDepartTimePicker(View view) {
+        DialogFragment newFragment = new TimePickerFragment();
+        newFragment.show(getSupportFragmentManager(), "departTimePicker");
+    }
+
+    public static class TimePickerFragment extends DialogFragment
+        implements TimePickerDialog.OnTimeSetListener {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the current time as the default values for the picker
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+
+            // Create a new instance of TimePickerDialog and return it
+            return new TimePickerDialog(getActivity(), this, hour, minute,
+                    DateFormat.is24HourFormat(getActivity()));
+        }
+
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            Log.d("TPDialog", "Tag is " + getTag());
+
+            String am_pm = "";
+
+            Calendar datetime = Calendar.getInstance();
+            datetime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            datetime.set(Calendar.MINUTE, minute);
+
+            if (datetime.get(Calendar.AM_PM) == Calendar.AM)
+                am_pm = "AM";
+            else if (datetime.get(Calendar.AM_PM) == Calendar.PM)
+                am_pm = "PM";
+
+            String strHrsToShow = (datetime.get(Calendar.HOUR) == 0) ?"12":datetime.get(Calendar.HOUR)+"";
+
+            switch(getTag()) {
+                case "arrivalTimePicker":
+                    TextView arrivalTextView = getActivity().findViewById(R.id.arrivalTimeText);
+                    arrivalTextView.setText(DateFormat.getTimeFormat(getActivity()).format(datetime.getTime()));
+                    break;
+                case "departTimePicker":
+                    TextView departTextView = getActivity().findViewById(R.id.departTimeText);
+                    departTextView.setText(DateFormat.getTimeFormat(getActivity()).format(datetime.getTime()));
+                    break;
+            }
+        }
+    }
+
 }
