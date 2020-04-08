@@ -29,7 +29,7 @@
         app:layout_constraintTop_toBottomOf="@id/textView"
         app:layout_constraintWidth_max="700dp"
         android:hint="@string/filterHint"
-        app:startIconDrawable="@drawable/ic_search"
+        app:startIconDrawable="@drawable/ic_search_24dp"
         >
 
         <com.google.android.material.textfield.TextInputEditText

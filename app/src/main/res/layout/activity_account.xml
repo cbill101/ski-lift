@@ -31,7 +31,7 @@
             android:id="@+id/profPicView"
             android:layout_width="90dp"
             android:layout_height="90dp"
-            android:background="@drawable/ic_name_light"
+            android:background="@drawable/ic_person_24dp"
             android:layout_centerInParent="true"/>
 
     </RelativeLayout>
