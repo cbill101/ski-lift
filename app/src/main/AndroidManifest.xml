@@ -12,28 +12,34 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/SkiLiftTheme">
+        <activity android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity">
 
-        <service
-            android:name=".java.MyFirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
 
-        <activity android:name=".ChatHistoryActivity"/>
+        <activity android:name=".ChatHistoryActivity" />
         <activity android:name=".FinishGoogleAccount" />
         <activity
             android:name=".CreateAccountActivity"
             android:windowSoftInputMode="stateUnchanged|adjustResize" />
-        <activity android:name=".AccountPage" />
+        <activity android:name=".AccountPage"
+            android:parentActivityName=".MainActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity"/>
+        </activity>
         <activity android:name=".Communicate" />
         <activity android:name=".Payment" />
         <activity android:name=".RideListActivity" />
         <activity android:name=".Wait" />
         <activity android:name=".Info" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity"
+            android:launchMode="singleTop"/>
         <activity android:name=".UserType" />
         <activity
             android:name=".LoginMenu"
@@ -49,7 +55,5 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD3t1r5hxMOVfPiBphOuTmJhErcHO0m-Pg" />
     </application>
-
-
 
 </manifest>

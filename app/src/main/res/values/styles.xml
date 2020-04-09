@@ -1,21 +1,29 @@
-<resources>
+<resources xmlns:name="http://schemas.android.com/apk/res-auto">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="SkiLiftTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorPrimaryVariant">@color/primaryLightColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorOnPrimary">#FFFFFF</item>
         <item name="colorSecondary">@color/secondaryColor</item>
         <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
-        <item name="colorAccent">@color/secondaryDarkColor</item>
         <item name="colorOnSecondary">#000000</item>
         <item name="colorError">#B00020</item>
         <item name="colorOnError">#FFFFFF</item>
-        <item name="colorSurface">#FFFFFF</item>
-        <item name="colorOnSurface">#000000</item>
+        <item name="colorSurface">@color/surfaceColor</item>
+        <item name="colorOnSurface">@color/onSurfaceColor</item>
+        <item name="colorAccent">@color/primaryTextHintColor</item>
+        <item name="android:colorBackground">@color/backgroundColor</item>
         <item name="colorOnBackground">#000000</item>
+        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.PrimarySurface</item>
+        <item name="buttonStyle">@style/SkiLiftTheme.DefaultButton</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+    </style>
+
+    <style name="SkiLiftTheme.DefaultButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/button_default</item>
     </style>
 
 </resources>

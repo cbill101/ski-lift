@@ -89,7 +89,7 @@ public class Provider {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Name: ").append(name.substring(0, name.indexOf(' '))).append("\r\n");
-        sb.append("Price: $").append(price).append("\r\n");
+        sb.append("Price: ").append(price).append("\r\n");
         sb.append("Destination: ").append(placeName);
 
         return sb.toString();

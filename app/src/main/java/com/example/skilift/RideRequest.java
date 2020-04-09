@@ -102,7 +102,7 @@ public class RideRequest {
         StringBuilder sb = new StringBuilder();
         sb.append("Name: ").append(name.substring(0, name.indexOf(' '))).append("\r\n");
         sb.append("Destination: ").append(destName).append("\r\n");
-        sb.append("Price: $").append(price);
+        sb.append("Price: ").append(price);
 
         return sb.toString();
     }

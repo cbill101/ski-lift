@@ -6,13 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
         app:layout_constraintBottom_toTopOf="@id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -41,7 +39,8 @@
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
         android:clickable="true"
         android:enabled="true"
         android:focusable="true"
@@ -68,7 +67,7 @@
         android:layout_width="@dimen/search_tb_width"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:background="#fFff"
+        android:background="@color/surfaceColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"

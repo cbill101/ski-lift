@@ -31,6 +31,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.1.4'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'com.cottacush:CurrencyEditText:0.0.3'
+    implementation 'androidx.preference:preference:1.1.0-rc01'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'androidx.test:core:1.2.0'

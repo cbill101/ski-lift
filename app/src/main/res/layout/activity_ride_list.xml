@@ -24,7 +24,6 @@
         android:id="@+id/filterTextLayout"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
         app:layout_constraintStart_toStartOf="@id/textView"
         app:layout_constraintEnd_toEndOf="@id/textView"
         app:layout_constraintTop_toBottomOf="@id/textView"

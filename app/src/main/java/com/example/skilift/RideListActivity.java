@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -40,6 +42,8 @@ public class RideListActivity extends AppCompatActivity {
     private ArrayList<RideRequest> requestList;
     private ArrayAdapter rideAdapter;
     private boolean isProvider;
+
+    private TextInputLayout searchLayout;
 
     private RadioButton listRadioButton = null;
     int listIndex = -1;
@@ -67,6 +71,7 @@ public class RideListActivity extends AppCompatActivity {
         });
 
         searchQueryText = findViewById(R.id.filterTextInput);
+        searchLayout = findViewById(R.id.filterTextLayout);
         mAuth = FirebaseAuth.getInstance();
 
         Intent intent = getIntent();

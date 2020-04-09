@@ -2,13 +2,16 @@ package com.example.skilift;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceManager;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -36,6 +39,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,13 +51,12 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, SharedPreferences.OnSharedPreferenceChangeListener {
     private MapView rsMapView;
     private GoogleMap gmap;
     private LocationManager locationManager;
     private LocationListener listener;
     private Bundle mainActBundle;
-    private TextInputEditText searchBar;
     private PlacesClient gmapPlacesClient;
     private AutocompleteSupportFragment autocompleteFragment;
     private Marker marker;
@@ -67,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String TAG = "MainActivity";
 
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
+    private static final String PICK_BTN_TEXT = "pick_btn_text";
+    private static final String CONFIRM_DEST_TEXT = "pick_dest_text";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         Intent intent = getIntent();
         String userType = intent.getStringExtra("UserType");
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
         confirmDest = findViewById(R.id.confirmDestinationButton);
         pickFromList = findViewById(R.id.pickFromListButton);
@@ -149,25 +157,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.account:
-                startActivity(new Intent(this, AccountPage.class));
+                startActivity(new Intent(getApplicationContext(), AccountPage.class));
+                return true;
+            case R.id.settings:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 return true;
             case R.id.help:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            Log.d(TAG, "onConfigurationChanged: switched over to landscape");
-            onSaveInstanceState(mainActBundle);
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Log.d(TAG, "onConfigurationChanged: switched over to portrait");
-            onSaveInstanceState(mainActBundle);
         }
     }
 
@@ -180,6 +178,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             mapViewBundle = new Bundle();
             outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
         }
+
+        outState.putString(PICK_BTN_TEXT, pickFromList.getText().toString());
+        outState.putString(CONFIRM_DEST_TEXT, confirmDest.getText().toString());
 
         rsMapView.onSaveInstanceState(mapViewBundle);
     }
@@ -211,8 +212,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     protected void onResume() {
-        super.onResume();
         rsMapView.onResume();
+        super.onResume();
     }
 
     @Override
@@ -275,8 +276,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         FloatingActionButton centerLoc = findViewById(R.id.centerLocButton);
         centerLoc.setBackgroundColor(Color.BLACK);
-
         requestLocationPerms();
+        rsMapView.onResume();
     }
 
     private void confirmSelectionAndProceed() {
@@ -302,6 +303,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME));
         autocompleteFragment.setTypeFilter(TypeFilter.ESTABLISHMENT);
         autocompleteFragment.setHint("Where to?");
+        EditText etp = autocompleteFragment.getView().findViewById(R.id.places_autocomplete_search_input);
+        etp.setTextColor(getColor(R.color.secondaryTextColor));
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -438,5 +441,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
         return bestLocation;
+    }
+
+    private void toggleDarkTheme(boolean dark_theme) {
+        if(dark_theme) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+    }
+
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.key_dark_theme_toggle))) {
+            toggleDarkTheme(sharedPreferences.getBoolean(key, AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES));
+        }
     }
 }
