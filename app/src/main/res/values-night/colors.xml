@@ -9,6 +9,7 @@
     <color name="primaryTextColor">#000000</color>
     <color name="primaryTextHintColor">#61ffffff</color>
     <color name="secondaryTextColor">#ffffff</color>
+    <color name="mapSearchColor">#484848</color>
     <color name="surfaceColor">#121212</color>
     <color name="onSurfaceColor">#ffffff</color>
     <color name="backgroundColor">#000000</color>

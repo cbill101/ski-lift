@@ -22,6 +22,7 @@ import android.location.LocationManager;
 import android.location.LocationListener;
 
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.model.Place;
@@ -249,6 +250,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         gmap = googleMap;
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        boolean nightModeSetting = sp.getBoolean(getString(R.string.key_dark_theme_toggle), false);
+
+        if(!nightModeSetting) {
+            gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_light));
+        }
+        else {
+            gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_dark));
+        }
 
         // Zoom into users location
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -451,7 +462,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
     }
-
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
