@@ -87,19 +87,20 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/sendButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/send"
             android:textSize="18sp"
+            android:elevation="6dp"
             app:layout_constraintEnd_toEndOf="@+id/priceInputLayout"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/priceInputLayout"
             app:layout_constraintTop_toBottomOf="@+id/pickDepartureTimeButton" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/pickArrivalTimeButton"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
@@ -107,13 +108,14 @@
             android:layout_marginTop="8dp"
             android:text="@string/pick_time"
             android:textSize="16sp"
+            android:elevation="2dp"
             app:layout_constraintEnd_toEndOf="@+id/arrivalText"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/arrivalText"
             app:layout_constraintTop_toBottomOf="@+id/arrivalText"
             android:onClick="showArrivalTimePicker"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/pickDepartureTimeButton"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
@@ -121,18 +123,20 @@
             android:layout_marginTop="8dp"
             android:text="@string/pick_time"
             android:textSize="16sp"
+            android:elevation="2dp"
             app:layout_constraintEnd_toEndOf="@+id/departText"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/departText"
             app:layout_constraintTop_toBottomOf="@+id/departText"
             android:onClick="showDepartTimePicker"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/finishedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/next_page"
             android:layout_marginTop="16dp"
+            android:elevation="6dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"

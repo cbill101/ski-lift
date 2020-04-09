@@ -34,13 +34,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RideListActivity extends AppCompatActivity {
+    private static final String STATE_LIST = "Results Adapter Data";
     private Button confirmButton;
     private ListView listView;
     private EditText searchQueryText;
     private FirebaseAuth mAuth;
     private ArrayList<Provider> rideList;
     private ArrayList<RideRequest> requestList;
-    private ArrayAdapter rideAdapter;
+    private ResultAdapter rideAdapter;
     private boolean isProvider;
 
     private TextInputLayout searchLayout;
@@ -79,16 +80,30 @@ public class RideListActivity extends AppCompatActivity {
 
         TextView descText = findViewById(R.id.textView);
 
+
         if(isProvider) {
             descText.setText(R.string.list_of_requests);
             confirmButton.setText(R.string.confirm);
+
+            //If restoring from state, load the list from the bundle
+            if (savedInstanceState != null) {
+                requestList = savedInstanceState.getParcelableArrayList(STATE_LIST);
+            } else {
+                //Else we are creating our Activity from scratch, pull list from where ever you initially get it from
+                requestList = new ArrayList<>();
+            }
+        }
+        else {
+            //If restoring from state, load the list from the bundle
+            if (savedInstanceState != null) {
+                rideList = savedInstanceState.getParcelableArrayList(STATE_LIST);
+            } else {
+                //Else we are creating our Activity from scratch, pull list from where ever you initially get it from
+                rideList = new ArrayList<>();
+            }
         }
 
         confirmButton.setVisibility(Button.INVISIBLE);
-
-        // Array list to save from db
-        rideList = new ArrayList<>();
-        requestList = new ArrayList<>();
 
         getContextualList();
     }
@@ -214,6 +229,12 @@ public class RideListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(STATE_LIST, rideAdapter.getList());
+    }
+
     private class ResultAdapter<T> extends ArrayAdapter<T> implements Filterable {
 
         private List<T> listItems;
@@ -224,28 +245,7 @@ public class RideListActivity extends AppCompatActivity {
             super(context, resource, objects);
             listItems = objects;
             filteredItems = objects;
-        }
-
-        public int getCount() {
-            return filteredItems.size();
-        }
-
-        public T getItem(int position) {
-            return filteredItems.get(position);
-        }
-
-        public void notifyDataSetChanged() {
-            super.notifyDataSetChanged();
-            confirmButton.setVisibility(Button.INVISIBLE);
-            listRadioButton = null;
-        }
-
-        @NonNull
-        @Override
-        public Filter getFilter() {
-
-            return new Filter() {
-
+            providerFilter = new Filter() {
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
                     FilterResults results = new FilterResults();
@@ -285,6 +285,30 @@ public class RideListActivity extends AppCompatActivity {
                     notifyDataSetChanged();
                 }
             };
+        }
+
+        public int getCount() {
+            return filteredItems.size();
+        }
+
+        public ArrayList<T> getList() {
+            return new ArrayList<T>(listItems);
+        }
+
+        public T getItem(int position) {
+            return filteredItems.get(position);
+        }
+
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+            confirmButton.setVisibility(Button.INVISIBLE);
+            listRadioButton = null;
+        }
+
+        @NonNull
+        @Override
+        public Filter getFilter() {
+            return providerFilter;
         }
     }
 }

@@ -1,8 +1,11 @@
 package com.example.skilift;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Map;
 
-public class Provider {
+public class Provider implements Parcelable {
     private String uID;
     private String name;
     private String phone;
@@ -93,5 +96,21 @@ public class Provider {
         sb.append("Destination: ").append(placeName);
 
         return sb.toString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(uID);
+        dest.writeString(name);
+        dest.writeString(phone);
+        dest.writeString(price);
+        dest.writeDouble(latitude);
+        dest.writeDouble(longitude);
+        dest.writeString(placeName);
     }
 }

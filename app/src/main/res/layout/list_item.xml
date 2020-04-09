@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RadioButton xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.radiobutton.MaterialRadioButton xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/label"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="10dp"
     android:textSize="16sp"
     android:textStyle="bold"
+    android:textColor="@color/secondaryTextColor"
+    android:drawableStart="@drawable/circle_img"
     android:onClick="onClickRadioButton"/>

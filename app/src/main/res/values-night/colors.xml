@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primaryColor">#909090</color>
-    <color name="primaryLightColor">#484848</color>
-    <color name="primaryDarkColor">#000000</color>
-    <color name="secondaryColor">#bbdefb</color>
-    <color name="secondaryLightColor">#eeffff</color>
-    <color name="secondaryDarkColor">#8aacc8</color>
+    <color name="primaryColor">#90caf9</color>
+    <color name="primaryLightColor">#c3fdff</color>
+    <color name="primaryDarkColor">#5d99c6</color>
+    <color name="onPrimaryColor">#000000</color>
+    <color name="secondaryColor">#b0bec5</color>
+    <color name="secondaryLightColor">#e2f1f8</color>
+    <color name="secondaryDarkColor">#808e95</color>
+    <color name="onSecondaryColor">#000000</color>
+    <color name="colorError">#cf6679</color>
+    <color name="onErrorColor">#000000</color>
     <color name="primaryTextColor">#000000</color>
     <color name="primaryTextHintColor">#61ffffff</color>
-    <color name="secondaryTextColor">#ffffff</color>
-    <color name="mapSearchColor">#484848</color>
+    <color name="secondaryTextColor">#DEffffff</color>
+    <color name="mapSearchColor">#363636</color>
     <color name="surfaceColor">#121212</color>
-    <color name="onSurfaceColor">#ffffff</color>
-    <color name="backgroundColor">#000000</color>
+    <color name="onSurfaceColor">#DEffffff</color>
+    <color name="backgroundColor">#121212</color>
+    <color name="onBackgroundColor">#DEFFFFFF</color>
 </resources>

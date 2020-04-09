@@ -19,24 +19,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/providerButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="108dp"
-        android:text="@string/provider"
+        android:text="@string/actionProvide"
+        android:textSize="22sp"
+        android:textColor="@color/primaryTextColor"
+        android:elevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/requesterButton"
         app:layout_constraintVertical_bias="0.941" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/requesterButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
-        android:text="@string/requester"
+        android:text="@string/actionRequest"
+        android:textSize="22sp"
+        android:textColor="@color/primaryTextColor"
+        android:elevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.499"
         app:layout_constraintStart_toStartOf="parent"

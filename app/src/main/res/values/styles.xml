@@ -4,19 +4,19 @@
     <style name="SkiLiftTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryVariant">@color/primaryLightColor</item>
+        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorOnPrimary">@color/onPrimaryColor</item>
         <item name="colorSecondary">@color/secondaryColor</item>
-        <item name="colorSecondaryVariant">@color/secondaryLightColor</item>
-        <item name="colorOnSecondary">#000000</item>
-        <item name="colorError">#B00020</item>
-        <item name="colorOnError">#FFFFFF</item>
+        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
+        <item name="colorOnSecondary">@color/onSecondaryColor</item>
+        <item name="colorError">@color/colorError</item>
+        <item name="colorOnError">@color/onErrorColor</item>
         <item name="colorSurface">@color/surfaceColor</item>
         <item name="colorOnSurface">@color/onSurfaceColor</item>
-        <item name="colorAccent">@color/primaryTextHintColor</item>
+        <item name="colorAccent">@color/secondaryColor</item>
         <item name="android:colorBackground">@color/backgroundColor</item>
-        <item name="colorOnBackground">#000000</item>
+        <item name="colorOnBackground">@color/onBackgroundColor</item>
         <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.PrimarySurface</item>
         <item name="buttonStyle">@style/SkiLiftTheme.DefaultButton</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
