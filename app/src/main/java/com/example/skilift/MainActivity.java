@@ -33,7 +33,9 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.libraries.places.api.Places;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Bundle mainActBundle;
     private PlacesClient gmapPlacesClient;
     private AutocompleteSupportFragment autocompleteFragment;
+    private SharedPreferences sp;
     private Marker marker;
     private Button confirmDest;
     private Button pickFromList;
@@ -92,8 +95,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Intent intent = getIntent();
         String userType = intent.getStringExtra("UserType");
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        sp.registerOnSharedPreferenceChangeListener(this);
 
         confirmDest = findViewById(R.id.confirmDestinationButton);
         pickFromList = findViewById(R.id.pickFromListButton);
@@ -250,15 +253,42 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         gmap = googleMap;
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        boolean nightModeSetting = sp.getBoolean(getString(R.string.key_dark_theme_toggle), false);
+        String themeChoice = sp.getString("key_theme_choice", "0");
 
-        if(!nightModeSetting) {
-            gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_light));
+        int nightModeFlags =
+                getApplicationContext().getResources().getConfiguration().uiMode &
+                        Configuration.UI_MODE_NIGHT_MASK;
+
+        switch(themeChoice) {
+            case "1":
+                gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_light));
+                break;
+            case "2":
+                gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_dark));
+                break;
         }
-        else {
-            gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_dark));
+
+        if(themeChoice.equals("0"))
+        {
+            switch (nightModeFlags) {
+                case Configuration.UI_MODE_NIGHT_YES:
+                    gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_dark));
+                    break;
+                case Configuration.UI_MODE_NIGHT_NO:
+                case Configuration.UI_MODE_NIGHT_UNDEFINED:
+                default:
+                    PowerManager powerManager = (PowerManager)
+                            getSystemService(Context.POWER_SERVICE);
+
+                    if (powerManager.isPowerSaveMode()) {
+                        gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_dark));
+                        break;
+                    }
+
+                    gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_light));
+                    break;
+            }
         }
 
         // Zoom into users location
@@ -454,19 +484,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return bestLocation;
     }
 
-    private void toggleDarkTheme(boolean dark_theme) {
-        if(dark_theme) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
-    }
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.key_dark_theme_toggle))) {
-            toggleDarkTheme(sharedPreferences.getBoolean(key, AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES));
+        if(key.equals("key_theme_choice")) {
+            Utils.toggleTheme(sharedPreferences.getString(key, "0"));
         }
     }
 }

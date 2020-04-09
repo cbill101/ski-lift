@@ -1,9 +1,14 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory app:title="@string/display">
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="@string/key_dark_theme_toggle"
-            android:title="@string/dark_theme" />
+        <ListPreference
+            app:title="Theme"
+            android:defaultValue="0"
+            android:dialogTitle="Theme"
+            android:key="key_theme_choice"
+            android:entries="@array/theme_choice_array"
+            android:entryValues="@array/theme_choices_values"
+            android:summary="Change the theme">
+        </ListPreference>
     </PreferenceCategory>
 </PreferenceScreen>

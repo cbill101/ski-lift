@@ -54,9 +54,7 @@ public abstract class OnboardingCommon extends AppCompatActivity implements Logi
         super.onCreate(savedInstanceState);
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        if(sp.getBoolean(getString(R.string.key_dark_theme_toggle), false)) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
+        Utils.loadThemePreference(sp);
 
         setContentView(getLayoutID());
 
