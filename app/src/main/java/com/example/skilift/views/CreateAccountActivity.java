@@ -1,27 +1,24 @@
-package com.example.skilift;
+package com.example.skilift.views;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.skilift.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.FirebaseError;
-import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hbb20.CountryCodePicker;
 
@@ -78,6 +75,10 @@ public class CreateAccountActivity extends OnboardingCommon {
             phoneInput.setText(savedInstanceState.getString(BUNDLE_PHONE));
             confirmPassInput.setText(savedInstanceState.getString(BUNDLE_CONFIRM_PASS));
         }
+
+        phoneInput.addTextChangedListener(new MyTextWatcher(phoneInput));
+        nameInput.addTextChangedListener(new MyTextWatcher(nameInput));
+        confirmPassInput.addTextChangedListener(new MyTextWatcher(confirmPassInput));
 
         createAccountButton = findViewById(R.id.createAccountButton);
 
@@ -210,6 +211,38 @@ public class CreateAccountActivity extends OnboardingCommon {
         confirmPassLayout.setError("Passwords don't match.");
         requestFocus(confirmPassInput);
         return false;
+    }
+
+    private class MyTextWatcher implements TextWatcher {
+
+        private View view;
+
+        public MyTextWatcher(View view) {
+            this.view = view;
+        }
+
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void afterTextChanged(Editable editable) {
+            switch (view.getId()) {
+                case R.id.confirmPassInput:
+                    if(confirmPassInput.getText().toString().length() != 0)
+                        confirmPass();
+                    break;
+                case R.id.phoneInput:
+                    if(phoneInput.getText().toString().length() != 0)
+                        validPhone();
+                    break;
+                case R.id.nameInput:
+                    if(nameInput.getText().toString().length() != 0)
+                        validName();
+                    break;
+            }
+        }
     }
 
     @Override

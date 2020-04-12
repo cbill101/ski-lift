@@ -1,18 +1,16 @@
-package com.example.skilift;
+package com.example.skilift.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.icu.text.NumberFormat;
 import android.icu.util.Calendar;
 import android.location.Location;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -23,22 +21,16 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.cottacush.android.currencyedittext.CurrencyInputWatcher;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.skilift.R;
+import com.example.skilift.interfaces.FirebaseResultListener;
+import com.example.skilift.models.Provider;
+import com.example.skilift.models.RideRequest;
+import com.example.skilift.models.User;
+import com.example.skilift.viewmodels.InformationVM;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
-public class Info extends AppCompatActivity {
+public class Info extends AppCompatActivity implements FirebaseResultListener {
     private static final String BUNDLE_PRICE = "price";
     private static final String BUNDLE_ARRIVAL_TIME = "arrival";
     private static final String BUNDLE_DEPART_TIME = "depart";
@@ -48,11 +40,10 @@ public class Info extends AppCompatActivity {
     private EditText priceInput;
     private TextView arrivalTimeText;
     private TextView departTimeText;
-    private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
     private Location pickupLocation;
     private boolean isProvider;
-
+    private InformationVM infoViewModel;
+    private User currentUser;
 
     private double placeLatitude;
     private double placeLongitude;
@@ -62,8 +53,7 @@ public class Info extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
-
-        db = FirebaseFirestore.getInstance();
+        infoViewModel = ViewModelProviders.of(this).get(InformationVM.class);
 
         nextPageButton = findViewById(R.id.finishedButton);
         sendButton = findViewById(R.id.sendButton);
@@ -92,7 +82,6 @@ public class Info extends AppCompatActivity {
         // could be null.
         pickupLocation = intent.getParcelableExtra("PickupLocation");
         priceInput.addTextChangedListener(new CurrencyInputWatcher(priceInput, "$", Locale.getDefault()));
-        mAuth = FirebaseAuth.getInstance();
     }
 
     //For now goes to next page
@@ -103,86 +92,40 @@ public class Info extends AppCompatActivity {
 
     //Anderson put the stuff you need to have happen when the button is pressed here
     private void insertInfo() {
-        DocumentReference dRec = db.collection("users").document(mAuth.getCurrentUser().getUid());
 
         if(priceInput.getText().toString().isEmpty()){
             Toast.makeText(Info.this, "Please enter info in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        dRec.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
-                    DocumentSnapshot data = task.getResult();
-                    if(data.exists()) {
-                        User user = new User(data.getData());
-                        // Get text from fields
-                        String price = priceInput.getText().toString();
+        infoViewModel.getCurrentUser(this);
 
-                        // Save provider info into a hashmap
-                        HashMap<String, Object> provInfoMap = new HashMap<>();
-
-                        provInfoMap.put("name", user.getName());
-                        provInfoMap.put("phone", user.getPhone());
-                        provInfoMap.put("dest_latitude", placeLatitude);
-                        provInfoMap.put("dest_longitude", placeLongitude);
-
-                        if(pickupLocation != null)
-                        {
-                            provInfoMap.put("pickup_latitude", pickupLocation.getLatitude());
-                            provInfoMap.put("pickup_longitude", pickupLocation.getLongitude());
-                        }
-
-                        provInfoMap.put("place_name", placeName);
-                        provInfoMap.put("price", price);
-
-                        finishInsertRide(provInfoMap);
-                    }
-                }
-                else {
-
-                }
+        if (currentUser != null) {
+            if(pickupLocation == null) {
+                Provider prov = new Provider();
+                prov.setName(currentUser.getName());
+                prov.setPhone(currentUser.getPhone());
+                prov.setDest_latitude(placeLatitude);
+                prov.setDest_longitude(placeLongitude);
+                prov.setPlace_name(placeName);
+                prov.setPrice(priceInput.getText().toString());
+                infoViewModel.saveProvider(prov);
             }
-        });
-    }
+            else {
+                RideRequest rr = new RideRequest();
+                rr.setName(currentUser.getName());
+                rr.setPhone(currentUser.getPhone());
+                rr.setDestLatitude(placeLatitude);
+                rr.setDestLongitude(placeLongitude);
+                rr.setPickupLatitude(pickupLocation.getLatitude());
+                rr.setPickupLongitude(pickupLocation.getLongitude());
+                rr.setDestName(placeName);
+                rr.setPrice(priceInput.getText().toString());
+                infoViewModel.saveRequest(rr);
+            }
 
-    private void finishInsertRide(Map<String, Object> provInfoMap) {
-        // Save to db
-        if(isProvider)
-            db.collection("Providers")
-                .document(mAuth.getCurrentUser().getUid())
-                .set(provInfoMap)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "insertRide: added ride info successfully to firestore.");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "insertRide: Error writing user document: ", e);
-                    }
-                });
-        else
-            db.collection("Requests")
-                    .document(mAuth.getCurrentUser().getUid())
-                    .set(provInfoMap)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d(TAG, "insertRide: added request info successfully to firestore.");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "insertRide: Error writing user document: ", e);
-                        }
-                    });
-
-        Toast.makeText(Info.this, "Info saved!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Info.this, "Info saved!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -209,6 +152,13 @@ public class Info extends AppCompatActivity {
     public void showDepartTimePicker(View view) {
         DialogFragment newFragment = new TimePickerFragment();
         newFragment.show(getSupportFragmentManager(), "departTimePicker");
+    }
+
+    @Override
+    public void onComplete(Object result) {
+        if(result instanceof User) {
+            currentUser = (User) result;
+        }
     }
 
     public static class TimePickerFragment extends DialogFragment

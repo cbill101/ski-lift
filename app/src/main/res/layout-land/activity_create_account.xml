@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".CreateAccountActivity">
+        tools:context=".views.CreateAccountActivity">
 
         <com.hbb20.CountryCodePicker
             android:id="@+id/ccp"

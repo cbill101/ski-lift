@@ -1,4 +1,4 @@
-package com.example.skilift;
+package com.example.skilift.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.example.skilift.R;
+import com.example.skilift.views.Communicate;
 
 //Evan do your stuff here
 public class Payment extends AppCompatActivity {

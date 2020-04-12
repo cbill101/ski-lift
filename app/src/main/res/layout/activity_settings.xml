@@ -4,14 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingsActivity">
+    tools:context=".views.SettingsActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/settingsToolbar"
-        android:minHeight="?attr/actionBarSize"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:elevation="4dp"
+        style="@style/SkiLiftTheme.DefaultToolbar"
         app:title="@string/settings"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/activity_settings"
@@ -21,7 +20,7 @@
 
     <fragment
         android:id="@+id/activity_settings"
-        android:name="com.example.skilift.SLSettingsFragment"
+        android:name="com.example.skilift.fragments.SLSettingsFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/settingsToolbar" />

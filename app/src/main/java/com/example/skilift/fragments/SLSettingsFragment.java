@@ -1,8 +1,10 @@
-package com.example.skilift;
+package com.example.skilift.fragments;
 
 import android.os.Bundle;
 
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.example.skilift.R;
 
 public class SLSettingsFragment extends PreferenceFragmentCompat {
     @Override

@@ -1,10 +1,12 @@
-package com.example.skilift;
+package com.example.skilift.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceFragmentCompat;
 
 import android.os.Bundle;
+
+import com.example.skilift.R;
 
 public class SettingsActivity extends AppCompatActivity {
 

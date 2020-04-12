@@ -4,18 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AccountPage">
+    tools:context=".views.AccountPage">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/accountToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
-        android:elevation="4dp"
         app:title="@string/my_account"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/SkiLiftTheme.DefaultToolbar"/>
 
     <RelativeLayout
         android:id="@+id/profPicLayout"
@@ -44,9 +43,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="144dp"
         android:text="@string/email"
-        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/accountToolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/accountToolbar"
+        style="@style/SkiLiftTheme.TextView.Medium"
+        />
 
     <TextView
         android:id="@+id/accountPage_accPhone"
@@ -55,7 +55,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="@string/phone"
-        android:textSize="14sp"
+        style="@style/SkiLiftTheme.TextView.Medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/accountPage_nameDisplay" />
 
@@ -66,7 +66,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="@string/name"
-        android:textSize="14sp"
+        style="@style/SkiLiftTheme.TextView.Medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/accEmail" />
 
@@ -77,9 +77,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/signOut"
-        android:textColor="@color/primaryTextColor"
-        android:elevation="6dp"
-        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/accountPage_phoneDisplay" />
@@ -90,7 +87,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
-        android:textSize="20sp"
+        style="@style/accountInformation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/emailLabel" />
 
@@ -100,7 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
-        android:textSize="20sp"
+        style="@style/accountInformation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/accountPage_accName" />
 
@@ -110,7 +107,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
-        android:textSize="20sp"
+        style="@style/accountInformation"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/accountPage_accPhone" />
 

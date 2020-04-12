@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".views.MainActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
-        android:minHeight="?attr/actionBarSize"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:elevation="4dp"
+        style="@style/SkiLiftTheme.DefaultToolbar"
+        app:title="@string/app_title"
         app:layout_constraintBottom_toTopOf="@id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

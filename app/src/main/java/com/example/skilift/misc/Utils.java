@@ -1,4 +1,4 @@
-package com.example.skilift;
+package com.example.skilift.misc;
 
 import android.content.SharedPreferences;
 import android.os.Build;

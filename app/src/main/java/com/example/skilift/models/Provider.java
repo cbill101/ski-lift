@@ -1,4 +1,4 @@
-package com.example.skilift;
+package com.example.skilift.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -10,30 +10,23 @@ public class Provider implements Parcelable {
     private String name;
     private String phone;
     private String price;
-    private double latitude;
-    private double longitude;
-    private String placeName;
+    private double dest_latitude;
+    private double dest_longitude;
+    private String place_name;
+    private boolean checked;
 
     public Provider(){
-
+        this.checked = false;
     }
 
     public Provider(Map<String, Object> dbData) {
         this.name = (String) dbData.get("name");
         this.phone = (String) dbData.get("phone");
         this.price = (String) dbData.get("price");
-        this.latitude = (double) dbData.get("dest_latitude");
-        this.longitude = (double) dbData.get("dest_longitude");
-        this.placeName = (String) dbData.get("place_name");
-    }
-
-    public Provider(String name, String phone, double latitude, double longitude, String placeName, String price){
-        this.name = name;
-        this.phone = phone;
-        this.price = price;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.placeName = placeName;
+        this.dest_latitude = (double) dbData.get("dest_latitude");
+        this.dest_longitude = (double) dbData.get("dest_longitude");
+        this.place_name = (String) dbData.get("place_name");
+        this.checked = false;
     }
 
     public String getName() {
@@ -60,40 +53,48 @@ public class Provider implements Parcelable {
         this.price = price;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public double getDest_latitude() {
+        return dest_latitude;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setDest_latitude(double dest_latitude) {
+        this.dest_latitude = dest_latitude;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public double getDest_longitude() {
+        return dest_longitude;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setDest_longitude(double dest_longitude) {
+        this.dest_longitude = dest_longitude;
     }
 
-    public String getPlaceName() {
-        return placeName;
+    public String getPlace_name() {
+        return place_name;
     }
 
-    public void setPlaceName(String placeName) {
-        this.placeName = placeName;
+    public void setPlace_name(String place_name) {
+        this.place_name = place_name;
     }
 
     public String getUID() { return uID; };
 
     public void setUID(String uID) { this.uID = uID; }
 
+    public boolean getChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Name: ").append(name.substring(0, name.indexOf(' '))).append("\r\n");
         sb.append("Price: ").append(price).append("\r\n");
-        sb.append("Destination: ").append(placeName);
+        sb.append("Destination: ").append(place_name);
 
         return sb.toString();
     }
@@ -109,8 +110,8 @@ public class Provider implements Parcelable {
         dest.writeString(name);
         dest.writeString(phone);
         dest.writeString(price);
-        dest.writeDouble(latitude);
-        dest.writeDouble(longitude);
-        dest.writeString(placeName);
+        dest.writeDouble(dest_latitude);
+        dest.writeDouble(dest_longitude);
+        dest.writeString(place_name);
     }
 }

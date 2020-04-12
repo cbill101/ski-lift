@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RideListActivity">
+    tools:context=".views.RideListActivity">
 
     <TextView
         android:id="@+id/textView"
@@ -19,48 +19,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.044" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/filterTextLayout"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
-        app:layout_constraintStart_toStartOf="@id/textView"
-        app:layout_constraintEnd_toEndOf="@id/textView"
-        app:layout_constraintTop_toBottomOf="@id/textView"
-        app:layout_constraintWidth_max="700dp"
-        android:hint="@string/filterHint"
-        app:startIconDrawable="@drawable/ic_search_24dp"
-        >
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/filterTextInput"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="match_parent"
-        android:layout_height="@+id/confirmButton"
-        android:layout_above="@id/confirmButton"
-        android:layout_below="@id/textView"
-        android:choiceMode="singleChoice"
-        android:padding="10dp"
+    <LinearLayout
+        android:id="@+id/listFragLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/confirmButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filterTextLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/confirmButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/confirm_and_pay"
-        android:elevation="6dp"
-        android:textColor="@color/primaryTextColor"
+        style="@style/SkiLiftTheme.DefaultButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.48"

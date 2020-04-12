@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.radiobutton.MaterialRadioButton xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/label"
-    android:layout_width="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:textSize="16sp"
-    android:textStyle="bold"
-    android:textColor="@color/secondaryTextColor"
-    android:drawableStart="@drawable/circle_img"
-    android:onClick="onClickRadioButton"/>
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <com.google.android.material.radiobutton.MaterialRadioButton
+        android:id="@+id/choice_desc_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/secondaryTextColor"
+        android:drawableStart="@drawable/circle_img" />
+
+</LinearLayout>

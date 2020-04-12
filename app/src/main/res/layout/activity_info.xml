@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Info">
+    tools:context=".views.Info">
 
     <TextView
         android:id="@+id/infoText"
@@ -90,8 +90,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/send"
-        android:textSize="18sp"
-        android:elevation="6dp"
+        style="@style/SkiLiftTheme.DefaultButton"
         app:layout_constraintEnd_toEndOf="@+id/priceInputLayout"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="@+id/priceInputLayout"
@@ -99,13 +98,11 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/pickArrivalTimeButton"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        style="@style/SkiLiftTheme.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/pick_time"
-        android:textSize="16sp"
-        android:elevation="2dp"
         app:layout_constraintEnd_toEndOf="@+id/arrivalText"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/arrivalText"
@@ -114,13 +111,11 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/pickDepartureTimeButton"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        style="@style/SkiLiftTheme.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/pick_time"
-        android:textSize="16sp"
-        android:elevation="2dp"
         app:layout_constraintEnd_toEndOf="@+id/departText"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/departText"
@@ -132,7 +127,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/next_page"
-        android:elevation="6dp"
+        style="@style/SkiLiftTheme.DefaultButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

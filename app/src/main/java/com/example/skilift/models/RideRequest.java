@@ -1,4 +1,4 @@
-package com.example.skilift;
+package com.example.skilift.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -15,9 +15,10 @@ public class RideRequest implements Parcelable {
     private double pickupLongitude;
     private String price;
     private String destName;
+    private boolean checked;
 
     public RideRequest(){
-
+        this.checked = false;
     }
 
     public RideRequest(Map<String, Object> dbData) {
@@ -29,6 +30,7 @@ public class RideRequest implements Parcelable {
         this.pickupLongitude = (double) dbData.get("pickup_longitude");
         this.destName = (String) dbData.get("place_name");
         this.price = (String) dbData.get("price");
+        this.checked = false;
     }
 
     public String getName() {
@@ -99,6 +101,14 @@ public class RideRequest implements Parcelable {
     public String getUID() { return uID; };
 
     public void setUID(String uID) { this.uID = uID; }
+
+    public boolean getChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
 
     @Override
     public String toString() {

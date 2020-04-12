@@ -1,8 +1,10 @@
-package com.example.skilift;
+package com.example.skilift.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.skilift.R;
 
 public class ChatHistoryActivity extends AppCompatActivity {
 

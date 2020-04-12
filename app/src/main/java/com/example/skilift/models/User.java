@@ -1,8 +1,14 @@
-package com.example.skilift;
+package com.example.skilift.models;
+
+import androidx.room.Entity;
 
 import java.util.Map;
 
+// User should still be fully online.
+@Entity
 public class User {
+
+    private String uID;
     private String Name;
     private String Phone;
     private String Email;
@@ -48,5 +54,13 @@ public class User {
 
     public void setEmail(String email) {
         this.Email = email;
+    }
+
+    public String getuID() {
+        return uID;
+    }
+
+    public void setuID(String uID) {
+        this.uID = uID;
     }
 }

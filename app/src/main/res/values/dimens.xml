@@ -3,4 +3,5 @@
     <dimen name="search_horiz_offset_port">35dp</dimen>
     <dimen name="search_horiz_offset_land">210dp</dimen>
     <dimen name="search_tb_width">320dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>

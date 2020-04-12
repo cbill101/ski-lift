@@ -13,36 +13,36 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/SkiLiftTheme">
-        <activity android:name=".SettingsActivity"
-            android:parentActivityName=".MainActivity">
+        <activity android:name=".views.SettingsActivity"
+            android:parentActivityName=".views.MainActivity">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value=".views.MainActivity"/>
         </activity>
 
-        <activity android:name=".ChatHistoryActivity" />
-        <activity android:name=".FinishGoogleAccount" />
+        <activity android:name=".views.ChatHistoryActivity" />
+        <activity android:name=".views.FinishGoogleAccount" />
         <activity
-            android:name=".CreateAccountActivity"
+            android:name=".views.CreateAccountActivity"
             android:windowSoftInputMode="stateUnchanged|adjustResize" />
-        <activity android:name=".AccountPage"
-            android:parentActivityName=".MainActivity">
+        <activity android:name=".views.AccountPage"
+            android:parentActivityName=".views.MainActivity">
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity"/>
+                android:value=".views.MainActivity"/>
         </activity>
-        <activity android:name=".Communicate" />
-        <activity android:name=".Payment" />
-        <activity android:name=".RideListActivity" />
-        <activity android:name=".Wait" />
-        <activity android:name=".Info" />
-        <activity android:name=".MainActivity"
+        <activity android:name=".views.Communicate" />
+        <activity android:name=".views.Payment" />
+        <activity android:name=".views.RideListActivity" />
+        <activity android:name=".views.Wait" />
+        <activity android:name=".views.Info" />
+        <activity android:name=".views.MainActivity"
             android:launchMode="singleTop"/>
-        <activity android:name=".UserType" />
+        <activity android:name=".views.UserType" />
         <activity
-            android:name=".LoginMenu"
+            android:name=".views.LoginMenu"
             android:windowSoftInputMode="stateUnchanged|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

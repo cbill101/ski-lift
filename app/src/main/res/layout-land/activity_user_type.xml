@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserType">
+    tools:context=".views.UserType">
 
     <TextView
         android:id="@+id/userTypeText"
@@ -25,9 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="108dp"
         android:text="@string/actionProvide"
-        android:textSize="22sp"
-        android:textColor="@color/primaryTextColor"
-        android:elevation="6dp"
+        style="@style/SkiLiftTheme.DefaultButton"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,9 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:text="@string/actionRequest"
-        android:textSize="22sp"
-        android:textColor="@color/primaryTextColor"
-        android:elevation="6dp"
+        style="@style/SkiLiftTheme.DefaultButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.499"
         app:layout_constraintStart_toStartOf="parent"
