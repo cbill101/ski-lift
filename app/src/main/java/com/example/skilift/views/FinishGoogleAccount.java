@@ -2,6 +2,7 @@ package com.example.skilift.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,18 +14,16 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.skilift.R;
+import com.example.skilift.interfaces.FirebaseResultListener;
 import com.example.skilift.models.User;
+import com.example.skilift.viewmodels.OnboardingVM;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.hbb20.CountryCodePicker;
 
@@ -40,11 +39,13 @@ public class FinishGoogleAccount extends AppCompatActivity {
     private TextInputLayout phoneLayout;
     private Button finishAccountButton;
     private CountryCodePicker ccp;
+    private OnboardingVM onboardViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_finish_google_account);
+        onboardViewModel = ViewModelProviders.of(this).get(OnboardingVM.class);
 
         phoneInput = findViewById(R.id.phoneInput);
         phoneLayout = findViewById(R.id.phoneInputLayout);
@@ -59,7 +60,6 @@ public class FinishGoogleAccount extends AppCompatActivity {
         ccp.registerCarrierNumberEditText(phoneInput);
 
         finishAccountButton = findViewById(R.id.finishAccountButton);
-        finishAccountButton.setBackground(getDrawable(R.drawable.button_default));
 
         finishAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,35 +91,13 @@ public class FinishGoogleAccount extends AppCompatActivity {
      */
     public void updateUI(FirebaseUser user){
         if (user != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            DocumentReference userDocRef = db.collection("users").document(user.getUid());
-            userDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            onboardViewModel.getUser(user, new FirebaseResultListener<User>() {
                 @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                            User user = new User(document.getData());
-                            Toast.makeText(getApplicationContext(), "Welcome back, " + user.getFirstName() + "!",
-                                    Toast.LENGTH_SHORT).show();
-                            openUserType();
-                            finish();
-                        } else {
-                            // check for google, send to finish if so.
-                            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                            Log.d(TAG, "No such document");
-
-                            if(acct != null) {
-                                Intent intent = new Intent(getApplicationContext(), FinishGoogleAccount.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }
-                    } else {
-                        Log.d(TAG, "get failed with ", task.getException());
-                    }
-
+                public void onComplete(User result) {
+                    Toast.makeText(getApplicationContext(), "Welcome back, " + result.getFirstName() + "!",
+                            Toast.LENGTH_SHORT).show();
+                    openUserType();
+                    finish();
                 }
             });
         }
@@ -137,7 +115,6 @@ public class FinishGoogleAccount extends AppCompatActivity {
      * Adds user info, called when auth is successful (meaning all verified so no need to re check.
      */
     private void addUserInfo() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         GoogleSignInAccount acc = GoogleSignIn.getLastSignedInAccount(this);
 
         if(!validPhone())
@@ -149,27 +126,8 @@ public class FinishGoogleAccount extends AppCompatActivity {
         String phone = ccp.getFormattedFullNumber();
         String email = acc.getEmail();
 
-        // Save user info into a hashmap
-        HashMap<String, Object> userInfoMap = new HashMap<>();
-        userInfoMap.put("Name", name);
-        userInfoMap.put("Phone", phone);
-        userInfoMap.put("Email", email);
-
-        db.collection("users")
-                .document(mAuth.getCurrentUser().getUid())
-                .set(userInfoMap)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        updateUI(mAuth.getCurrentUser());
-                        Log.d(TAG, "addUserInfo: added user info successfully to firestore.");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "addUserInfo: Error writing user document: ", e);
-                    }
-                });
+        User newUser = new User(mAuth.getCurrentUser().getUid(), name, phone, email);
+        onboardViewModel.saveUser(newUser);
+        updateUI(mAuth.getCurrentUser());
     }
 }

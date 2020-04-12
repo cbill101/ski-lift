@@ -16,13 +16,15 @@ public class User {
     public User(){
     }
 
-    public User(String name, String phone, String email){
+    public User(String uID, String name, String phone, String email){
+        this.uID = uID;
         this.Name = name;
         this.Phone = phone;
         this.Email = email;
     }
 
     public User(Map<String, Object> document) {
+        this.uID = (String) document.get("uID");
         this.Name = (String) document.get("Name");
         this.Phone = (String) document.get("Phone");
         this.Email = (String) document.get("Email");

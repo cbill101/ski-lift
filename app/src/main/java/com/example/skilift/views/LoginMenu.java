@@ -1,6 +1,7 @@
 package com.example.skilift.views;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.skilift.R;
+import com.example.skilift.viewmodels.OnboardingVM;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -27,8 +29,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginMenu extends OnboardingCommon {
     private static final String TAG = "LoginActivity";
-    private static final String BUNDLE_USERNAME = "";
-    private static final String BUNDLE_PASSWORD = "";
 
     private static int RC_GSO = 0;
 
@@ -41,7 +41,7 @@ public class LoginMenu extends OnboardingCommon {
 
     private GoogleSignInClient mGoogleSignInClient;
     // [START declare_auth]
-    private FirebaseAuth mAuth;
+    private OnboardingVM onboardViewModel;
     // [END declare_auth]
 
     @Override
@@ -50,11 +50,7 @@ public class LoginMenu extends OnboardingCommon {
 
         loginButton = findViewById(R.id.loginButton);
         createAccountButton = findViewById(R.id.createAccountButton);
-
-        // [START initialize_auth]
-        // Initialize Firebase Auth
-
-        mAuth = FirebaseAuth.getInstance();
+        onboardViewModel = ViewModelProviders.of(this).get(OnboardingVM.class);
 
         // Else, sign in options! Google:
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -90,10 +86,6 @@ public class LoginMenu extends OnboardingCommon {
                 startActivity(intent);
             }
         });
-
-        loginButton.setBackground(getDrawable(R.drawable.button_default));
-        createAccountButton.setBackground(getDrawable(R.drawable.button_outlined));
-        gsoButton.setBackground(getDrawable(R.drawable.button_default));
     }
 
     @Override
@@ -136,25 +128,9 @@ public class LoginMenu extends OnboardingCommon {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.loginConstraintLayout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                            updateUI(null);
-                        }
-
-                        // ...
-                    }
-                });
+        onboardViewModel.loginGoogle(credential).observe(this, fbUser -> {
+            updateUI(fbUser);
+        });
     }
 
     @Override

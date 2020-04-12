@@ -13,12 +13,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
 import com.example.skilift.R;
+import com.example.skilift.interfaces.FirebaseResultListener;
 import com.example.skilift.misc.Utils;
 import com.example.skilift.interfaces.LoginLayout;
 import com.example.skilift.models.User;
+import com.example.skilift.viewmodels.OnboardingVM;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,6 +45,7 @@ public abstract class OnboardingCommon extends AppCompatActivity implements Logi
     private EditText usernameInput;
     private TextInputLayout usernameLayout;
     private FirebaseAuth mAuth;
+    private OnboardingVM onboardViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,7 @@ public abstract class OnboardingCommon extends AppCompatActivity implements Logi
         Utils.loadThemePreference(sp);
 
         setContentView(getLayoutID());
+        onboardViewModel = ViewModelProviders.of(this).get(OnboardingVM.class);
 
         usernameInput = findViewById(R.id.usernameInput);
         usernameLayout = findViewById(R.id.usernameInputLayout);
@@ -154,39 +159,10 @@ public abstract class OnboardingCommon extends AppCompatActivity implements Logi
 
         if(validEmail && validPass) {
             // [START sign_in_with_email]
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "signInWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                updateUI(user);
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                if(task.getException().getClass().equals(FirebaseAuthInvalidUserException.class)){
-                                    passwordLayout.setError(getString(R.string.err_msg_no_user));
-                                }else {
-                                    passwordLayout.setError(getString(R.string.err_msg_incorrect_any));
-                                }
-                                requestFocus(passwordLayout);
-                                updateUI(null);
-                                // [START_EXCLUDE]
-                                //checkForMultiFactorFailure(task.getException());
-                                // [END_EXCLUDE]
-                            }
-
-                            // [START_EXCLUDE]
-//                            if (!task.isSuccessful()) {
-//                                mStatusTextView.setText(R.string.auth_failed);
-//                            }
-//                            hideProgressBar();
-                            // [END_EXCLUDE]
-                        }
-                    });
-            // [END sign_in_with_email]
+            onboardViewModel.loginNormal(email, password).observe(this, fbUser -> {
+                Log.d(TAG, "signInWithEmail:success");
+                updateUI(fbUser);
+            });
         }
         else {
             passwordLayout.setError(getString(R.string.err_msg_incorrect_any));
@@ -201,35 +177,26 @@ public abstract class OnboardingCommon extends AppCompatActivity implements Logi
      */
     public void updateUI(FirebaseUser user){
         if (user != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            DocumentReference userDocRef = db.collection("users").document(user.getUid());
-            userDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            onboardViewModel.getUser(user, new FirebaseResultListener<User>() {
                 @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                            User user = new User(document.getData());
-                            Toast.makeText(getApplicationContext(), "Welcome back, " + user.getFirstName() + "!",
-                                    Toast.LENGTH_SHORT).show();
-                            openUserType();
-                            finish();
-                        } else {
-                            // check for google, send to finish if so.
-                            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                            Log.d(TAG, "No such document");
-
-                            if(acct != null) {
-                                Intent intent = new Intent(getApplicationContext(), FinishGoogleAccount.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }
-                    } else {
-                        Log.d(TAG, "get failed with ", task.getException());
+                public void onComplete(User result) {
+                    if (result != null) {
+                        Toast.makeText(getApplicationContext(), "Welcome back, " + result.getFirstName() + "!",
+                                Toast.LENGTH_SHORT).show();
+                        openUserType();
+                        finish();
                     }
+                    else {
+                        // check for google, send to finish if so.
+                        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+                        Log.d(TAG, "No such document");
 
+                        if(acct != null) {
+                            Intent intent = new Intent(getApplicationContext(), FinishGoogleAccount.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
                 }
             });
         }

@@ -33,6 +33,31 @@ public class RideRequest implements Parcelable {
         this.checked = false;
     }
 
+    protected RideRequest(Parcel in) {
+        uID = in.readString();
+        name = in.readString();
+        phone = in.readString();
+        destLatitude = in.readDouble();
+        destLongitude = in.readDouble();
+        pickupLatitude = in.readDouble();
+        pickupLongitude = in.readDouble();
+        price = in.readString();
+        destName = in.readString();
+        checked = in.readByte() != 0;
+    }
+
+    public static final Creator<RideRequest> CREATOR = new Creator<RideRequest>() {
+        @Override
+        public RideRequest createFromParcel(Parcel in) {
+            return new RideRequest(in);
+        }
+
+        @Override
+        public RideRequest[] newArray(int size) {
+            return new RideRequest[size];
+        }
+    };
+
     public String getName() {
         return name;
     }

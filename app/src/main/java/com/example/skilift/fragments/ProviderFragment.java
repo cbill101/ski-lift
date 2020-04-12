@@ -21,13 +21,13 @@ import com.example.skilift.adapters.RideListAdapter;
 import com.example.skilift.interfaces.OnResultClickListener;
 import com.example.skilift.models.Provider;
 import com.example.skilift.models.RideRequest;
-import com.example.skilift.viewmodels.ProviderVM;
+import com.example.skilift.viewmodels.SharedListVM;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProviderFragment extends Fragment implements OnResultClickListener {
-    private ProviderVM provViewModel;
+    private SharedListVM provViewModel;
     private RideListAdapter rideAdapter;
     private RequestsAdapter requestsAdapter;
     private RecyclerView listView;
@@ -53,7 +53,7 @@ public class ProviderFragment extends Fragment implements OnResultClickListener 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        provViewModel = ViewModelProviders.of(requireActivity()).get(ProviderVM.class);
+        provViewModel = ViewModelProviders.of(requireActivity()).get(SharedListVM.class);
         provList = new ArrayList<>();
         reqList = new ArrayList<>();
 
@@ -91,7 +91,7 @@ public class ProviderFragment extends Fragment implements OnResultClickListener 
             requestsAdapter.setOnResultClickListener(this);
             listView.setAdapter(requestsAdapter);
 
-            provViewModel.getRequestList().observe(this, requests -> {
+            provViewModel.getRequestList().observe(getViewLifecycleOwner(), requests -> {
                 reqList = requests;
                 requestsAdapter.setRequestList(reqList);
             });
@@ -117,7 +117,7 @@ public class ProviderFragment extends Fragment implements OnResultClickListener 
             rideAdapter.setOnResultClickListener(this);
             listView.setAdapter(rideAdapter);
 
-            provViewModel.getProviderList().observe(this, providers -> {
+            provViewModel.getProviderList().observe(getViewLifecycleOwner(), providers -> {
                 provList = providers;
                 rideAdapter.setProviderList(provList);
             });

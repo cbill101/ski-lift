@@ -4,6 +4,8 @@
         android:title="@string/account" />
     <item android:id="@+id/settings"
         android:title="@string/settings" />
+    <item android:id="@+id/chats"
+        android:title="@string/chats" />
     <item android:id="@+id/about"
         android:title="@string/about" />
     <item android:id="@+id/help"

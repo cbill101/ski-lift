@@ -18,9 +18,7 @@ import com.example.skilift.models.RideRequest;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class RideListActivity extends AppCompatActivity implements OnResultClickListener {
-    private static final String STATE_LIST = "Results Adapter Data";
     private Button confirmButton;
-    private FirebaseAuth mAuth;
     private TextView descText;
     private ProviderFragment listFragment;
     private Provider selectedProvider;
@@ -43,8 +41,6 @@ public class RideListActivity extends AppCompatActivity implements OnResultClick
                 openPayment();
             }
         });
-
-        mAuth = FirebaseAuth.getInstance();
 
         Intent intent = getIntent();
         isProvider = intent.getBooleanExtra("Provider", false);

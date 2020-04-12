@@ -1,16 +1,25 @@
 package com.example.skilift.viewmodels;
 
+import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.skilift.interfaces.FirebaseResultListener;
 import com.example.skilift.models.*;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -72,5 +81,21 @@ public class InformationVM extends ViewModel {
                 }
             }
         });
+    }
+
+    public void displayProfilePic(Context ctx, ImageView profPicView) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        Uri profPic = user.getPhotoUrl();
+
+        if(profPic != null) {
+            Log.w(TAG, "test url" + profPic.toString());
+
+            Glide.with(ctx)
+                    .load(profPic)
+                    .centerCrop()
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(profPicView);
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.example.skilift.views;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -17,7 +18,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.skilift.R;
+import com.example.skilift.interfaces.FirebaseResultListener;
 import com.example.skilift.models.User;
+import com.example.skilift.viewmodels.InformationVM;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -37,11 +40,13 @@ public class AccountPage extends AppCompatActivity {
     private TextView phoneDisplay;
     private ImageView profPicView;
     private GoogleSignInAccount googleAccount;
+    private InformationVM infoViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
+        infoViewModel = ViewModelProviders.of(this).get(InformationVM.class);
 
         googleAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
 
@@ -62,8 +67,6 @@ public class AccountPage extends AppCompatActivity {
 
         Button signOutButton = findViewById(R.id.signOutButton);
 
-        signOutButton.setBackground(getDrawable(R.drawable.button_default));
-
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,38 +80,16 @@ public class AccountPage extends AppCompatActivity {
     }
 
     private void showUserInfo() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        DocumentReference dRef = db.collection("users").document(mAuth.getCurrentUser().getUid());
-
-        dRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        infoViewModel.getCurrentUser(new FirebaseResultListener<User>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        User user = new User(document.getData());
-                        emailAcc.setText(user.getEmail());
-                        userDisplayName.setText(user.getName());
-                        phoneDisplay.setText(user.getPhone());
-                    }
-                }
+            public void onComplete(User result) {
+                emailAcc.setText(result.getEmail());
+                userDisplayName.setText(result.getName());
+                phoneDisplay.setText(result.getPhone());
             }
         });
 
-        FirebaseUser user = mAuth.getCurrentUser();
-
-        Uri profPic = user.getPhotoUrl();
-
-        if(profPic != null) {
-            Log.w(TAG, "test url" + profPic.toString());
-
-            Glide.with(this)
-                    .load(profPic)
-                    .centerCrop()
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(profPicView);
-        }
+        infoViewModel.displayProfilePic(this, profPicView);
     }
 
     @Override

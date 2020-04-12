@@ -21,6 +21,7 @@ import android.location.LocationManager;
 import android.location.LocationListener;
 
 import com.example.skilift.R;
+import com.example.skilift.adapters.ChatHistoryItemRecyclerViewAdapter;
 import com.example.skilift.misc.Utils;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -28,7 +29,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LocationManager locationManager;
     private LocationListener listener;
     private Bundle mainActBundle;
-    private PlacesClient gmapPlacesClient;
     private AutocompleteSupportFragment autocompleteFragment;
     private SharedPreferences sp;
     private Marker marker;
@@ -143,8 +142,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         initAutocomplete();
-
-        gmapPlacesClient = Places.createClient(this);
     }
 
     @Override
@@ -164,6 +161,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return true;
             case R.id.settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                return true;
+            case R.id.chats:
+                startActivity(new Intent(getApplicationContext(), ChatHistoryActivity.class));
                 return true;
             case R.id.help:
                 return true;

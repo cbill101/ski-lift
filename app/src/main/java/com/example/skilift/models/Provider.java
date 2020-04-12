@@ -3,6 +3,8 @@ package com.example.skilift.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.firestore.Exclude;
+
 import java.util.Map;
 
 public class Provider implements Parcelable {
@@ -28,6 +30,29 @@ public class Provider implements Parcelable {
         this.place_name = (String) dbData.get("place_name");
         this.checked = false;
     }
+
+    protected Provider(Parcel in) {
+        uID = in.readString();
+        name = in.readString();
+        phone = in.readString();
+        price = in.readString();
+        dest_latitude = in.readDouble();
+        dest_longitude = in.readDouble();
+        place_name = in.readString();
+        checked = in.readByte() != 0;
+    }
+
+    public static final Creator<Provider> CREATOR = new Creator<Provider>() {
+        @Override
+        public Provider createFromParcel(Parcel in) {
+            return new Provider(in);
+        }
+
+        @Override
+        public Provider[] newArray(int size) {
+            return new Provider[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -81,6 +106,7 @@ public class Provider implements Parcelable {
 
     public void setUID(String uID) { this.uID = uID; }
 
+    @Exclude
     public boolean getChecked() {
         return checked;
     }

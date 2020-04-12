@@ -20,7 +20,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProviderVM extends ViewModel {
+public class SharedListVM extends ViewModel {
     private static final String TAG = "ProviderVM";
     private MutableLiveData<ArrayList<Provider>> providerList;
     private MutableLiveData<ArrayList<RideRequest>> requestsList;

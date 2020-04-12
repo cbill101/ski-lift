@@ -1,6 +1,7 @@
 package com.example.skilift.views;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.skilift.R;
+import com.example.skilift.models.User;
+import com.example.skilift.viewmodels.OnboardingVM;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,6 +51,8 @@ public class CreateAccountActivity extends OnboardingCommon {
 
     private Button createAccountButton;
 
+    private OnboardingVM onboardViewModel;
+
     private CountryCodePicker ccp;
 
     private FirebaseAuth mAuth;
@@ -67,6 +72,8 @@ public class CreateAccountActivity extends OnboardingCommon {
         passwordInput = findViewById(R.id.passwordInput);
         passwordLayout = findViewById(R.id.passwordInputLayout);
 
+        onboardViewModel = ViewModelProviders.of(this).get(OnboardingVM.class);
+
         // better than onRestoreInstanceState looking at the lifecycle
         if(savedInstanceState != null) {
             usernameInput.setText(savedInstanceState.getString(BUNDLE_USERNAME));
@@ -81,8 +88,6 @@ public class CreateAccountActivity extends OnboardingCommon {
         confirmPassInput.addTextChangedListener(new MyTextWatcher(confirmPassInput));
 
         createAccountButton = findViewById(R.id.createAccountButton);
-
-        createAccountButton.setBackground(getDrawable(R.drawable.button_default));
 
         createAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,72 +125,35 @@ public class CreateAccountActivity extends OnboardingCommon {
         String email = usernameInput.getText().toString().trim();
         String password = passwordInput.getText().toString().trim();
 
-        mAuth = FirebaseAuth.getInstance();
-
         Log.d(TAG, "createAccount: Email: " + email +" Correct Form:" + validEmail);
-        Log.d(TAG, "createAccount:" + " Password valid: " + validPass);;
-        Log.d(TAG, "createAccount:" + " Passwords match: " + passMatch);;
+        Log.d(TAG, "createAccount:" + " Password valid: " + validPass);
+        Log.d(TAG, "createAccount:" + " Passwords match: " + passMatch);
 
         if(validEmail && validPass && validName && validPhone && passMatch){
-            // [START create_user_with_email]
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "createUserWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                addUserInfo();
-                                updateUI(user);
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                updateUI(null);
-                            }
-
-                        }
-                    });
-            // [END create_user_with_email]
+            onboardViewModel.createAccount(email, password).observe(this, fbUser -> {
+                addUserInfo(fbUser);
+            });
         }
     }
 
     /**
      * Adds user info, called when auth is successful (meaning all verified so no need to re check.
      */
-    private void addUserInfo() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
+    private void addUserInfo(FirebaseUser user) {
         String name = nameInput.getText().toString().trim();
         String phone = ccp.getFormattedFullNumber();
         String email = usernameInput.getText().toString().trim();
 
-        // Save user info into a hashmap
-        HashMap<String, Object> userInfoMap = new HashMap<>();
-        userInfoMap.put("Name", name);
-        userInfoMap.put("Phone", phone);
-        userInfoMap.put("Email", email);
-
-        db.collection("users")
-            .document(mAuth.getCurrentUser().getUid())
-            .set(userInfoMap)
-            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    Log.d(TAG, "addUserInfo: added user info successfully to firestore.");
-                }
-            })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.w(TAG, "addUserInfo: Error writing user document: ", e);
-                }
-            });
+        User newUser = new User(user.getUid(), name, phone, email);
+        onboardViewModel.saveUser(newUser);
+        updateUI(user);
     }
 
     private boolean validPhone() {
-        if(ccp.isValidFullNumber())
+        if(ccp.isValidFullNumber()) {
+            phoneLayout.setError(null);
             return true;
+        }
 
         phoneLayout.setError("Phone number not valid.");
         requestFocus(phoneLayout);
@@ -195,8 +163,10 @@ public class CreateAccountActivity extends OnboardingCommon {
     private boolean validName() {
         String text = nameInput.getText().toString().trim();
 
-        if(!text.isEmpty())
+        if(!text.isEmpty()) {
+            nameLayout.setError(null);
             return true;
+        }
 
         nameLayout.setError("Name can't be empty.");
         requestFocus(nameInput);
@@ -205,6 +175,7 @@ public class CreateAccountActivity extends OnboardingCommon {
 
     private boolean confirmPass() {
         if(confirmPassInput.getText().toString().trim().equals(passwordInput.getText().toString().trim())) {
+            confirmPassLayout.setError(null);
             return true;
         }
 

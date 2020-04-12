@@ -23,7 +23,6 @@
     </style>
 
     <style name="SkiLiftTheme.DefaultButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:background">@drawable/button_default</item>
         <item name="android:textColor">@color/primaryTextColor</item>
         <item name="android:elevation">6dp</item>
         <item name="android:textSize">16sp</item>
@@ -35,7 +34,11 @@
     </style>
 
     <style name="SkiLiftTheme.TextView.Medium" parent="Widget.MaterialComponents.TextView">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="SkiLiftTheme.TextView.Small" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="accountInformation" parent="Widget.MaterialComponents.TextView">
