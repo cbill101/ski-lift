@@ -23,9 +23,13 @@
     </style>
 
     <style name="SkiLiftTheme.DefaultButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:textColor">@color/primaryTextColor</item>
-        <item name="android:elevation">6dp</item>
+        <item name="elevation">6dp</item>
         <item name="android:textSize">16sp</item>
+        <item name="cornerRadius">20dp</item>
+    </style>
+
+    <style name="SkiLiftTheme.DefaultButton.Icon" parent="SkiLiftTheme.DefaultButton">
+        <item name="iconGravity">textStart</item>
     </style>
 
     <style name="SkiLiftTheme.OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
@@ -48,6 +52,14 @@
     <style name="SkiLiftTheme.DefaultToolbar" parent="Widget.MaterialComponents.Toolbar.PrimarySurface">
         <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="android:elevation">4dp</item>
+    </style>
+
+    <style name="SkiLiftTheme.ChatCards" parent="Widget.MaterialComponents.CardView">
+        <item name="android:elevation">6dp</item>
+        <item name="cardBackgroundColor">@color/cardPrimaryColor</item>
+        <item name="strokeColor">@color/secondaryDarkColor</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardElevation">2dp</item>
     </style>
 
 </resources>

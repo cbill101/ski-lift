@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,14 +15,11 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.location.Address;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationListener;
 
 import com.example.skilift.R;
-import com.example.skilift.adapters.ChatHistoryItemRecyclerViewAdapter;
 import com.example.skilift.misc.Utils;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -42,7 +40,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,7 +52,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, SharedPreferences.OnSharedPreferenceChangeListener {
     private MapView rsMapView;
-    private GoogleMap gmap;
+    private GoogleMap mMap;
     private LocationManager locationManager;
     private LocationListener listener;
     private Bundle mainActBundle;
@@ -65,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Button confirmDest;
     private Button pickFromList;
     private Place currentSelection;
+    private boolean mLocationPermissionGranted;
     private boolean isProvider;
 
     public static final int LOCATION_REQUEST = 0;
@@ -84,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             //noinspection AndroidLintSourceLockedOrientationActivity
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+
+        mLocationPermissionGranted = checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
 
         setContentView(R.layout.activity_main);
 
@@ -133,6 +134,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         rsMapView.onCreate(savedInstanceState);
         rsMapView.getMapAsync(this);
+
+        if(savedInstanceState != null) {
+
+        }
+        else {
+            getLocationPermission();
+        }
 
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), getString(R.string.googleApiKey));
@@ -194,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
@@ -202,7 +211,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mapInitialize();
+                    mLocationPermissionGranted = true;
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
                 } else {
                     FloatingActionButton centerLoc = findViewById(R.id.centerLocButton);
                     centerLoc.hide();
@@ -211,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             default: {
             }
         }
+        updateLocationUI();
     }
 
     @Override
@@ -251,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        gmap = googleMap;
+        mMap = googleMap;
 
         String themeChoice = sp.getString("key_theme_choice", "0");
 
@@ -261,10 +273,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         switch(themeChoice) {
             case "1":
-                gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_light));
+                mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_light));
                 break;
             case "2":
-                gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_dark));
+                mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_dark));
                 break;
         }
 
@@ -272,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         {
             switch (nightModeFlags) {
                 case Configuration.UI_MODE_NIGHT_YES:
-                    gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_dark));
+                    mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_dark));
                     break;
                 case Configuration.UI_MODE_NIGHT_NO:
                 case Configuration.UI_MODE_NIGHT_UNDEFINED:
@@ -281,11 +293,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             getSystemService(Context.POWER_SERVICE);
 
                     if (powerManager.isPowerSaveMode()) {
-                        gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_dark));
+                        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_dark));
                         break;
                     }
 
-                    gmap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_light));
+                    mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style_light));
                     break;
             }
         }
@@ -314,10 +326,45 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         };
 
-        FloatingActionButton centerLoc = findViewById(R.id.centerLocButton);
-        centerLoc.setBackgroundColor(Color.BLACK);
-        requestLocationPerms();
+        updateLocationUI();
+
         rsMapView.onResume();
+    }
+
+    private void updateLocationUI() {
+        if (mMap == null) {
+            return;
+        }
+        try {
+            mMap.getUiSettings().setZoomGesturesEnabled(true);
+            mMap.getUiSettings().setRotateGesturesEnabled(false);
+
+            if(marker == null) {
+                marker = mMap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).visible(false));
+            }
+
+            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+            FloatingActionButton centerLoc = findViewById(R.id.centerLocButton);
+            if (mLocationPermissionGranted) {
+                mMap.setMyLocationEnabled(true);
+                centerLoc.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        centreMapOnLocation(getLastKnownLoc());
+                    }
+                });
+                centerLoc.show();
+
+                centreMapOnLocation(getLastKnownLoc());
+            } else {
+                mMap.setMyLocationEnabled(false);
+                centerLoc.hide();
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+
     }
 
     private void confirmSelectionAndProceed() {
@@ -343,8 +390,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.LAT_LNG, Place.Field.NAME));
         autocompleteFragment.setTypeFilter(TypeFilter.ESTABLISHMENT);
         autocompleteFragment.setHint("Where to?");
-        EditText etp = autocompleteFragment.getView().findViewById(R.id.places_autocomplete_search_input);
-        etp.setTextColor(getColor(R.color.secondaryTextColor));
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
@@ -366,42 +411,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     /**
-     * Initializes the Google Map instance in the main activity.
-     */
-    private void mapInitialize() {
-        gmap.getUiSettings().setZoomGesturesEnabled(true);
-        gmap.getUiSettings().setRotateGesturesEnabled(false);
-        marker = gmap.addMarker(new MarkerOptions().position(new LatLng(0, 0)).visible(false));
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            FloatingActionButton centerLoc = findViewById(R.id.centerLocButton);
-
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
-            gmap.setMyLocationEnabled(true);
-            gmap.getUiSettings().setMyLocationButtonEnabled(false);
-
-            centerLoc.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    centreMapOnLocation(getLastKnownLoc());
-                }
-            });
-            centerLoc.show();
-
-            centreMapOnLocation(getLastKnownLoc());
-        }
-    }
-
-    /**
      * Center's the map to the passed in location.
      *
      * @param location - google maps location object being the location to center to.
      */
     public void centreMapOnLocation(Location location) {
         LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 100, null);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 100, null);
     }
 
     /**
@@ -411,51 +427,40 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      */
     public void centreMapOnLocation(Place place) {
         LatLng userLocation = place.getLatLng();
-        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 100, null);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 100, null);
     }
 
-
-    /**
-     * Center's the map to the passed in address.
-     *
-     * @param addr - google maps address object being the location to center to.
-     */
-    public void centreMapOnLocation(Address addr) {
-        LatLng userLocation = new LatLng(addr.getLatitude(), addr.getLongitude());
-        gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 100, null);
-    }
-
-    /**
-     * Helper method that manages requesting location permissions.
-     */
-    private void requestLocationPerms() {
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (!mLocationPermissionGranted) {
+            if(shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
                 alertBuilder.setCancelable(true);
                 alertBuilder.setTitle("Location Permissions Request");
-                alertBuilder.setMessage("Location permissions are needed in Ski Lift so rideshare providers can find you much easier. " +
-                        "If denied, you can set a location marker when requesting as pick up.");
-                alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                alertBuilder.setMessage("Location permissions (specifically GPS) are used in Ski Lift to determine pickup location and help rideshare providers find you easier. " +
+                        "If denied, you can set a location marker when requesting as pick up. " +
+                        "If you're sure about denying for this app, tap/check don't ask again. You can always go to Settings -> Apps and manually turn on permissions.");
+                alertBuilder.setPositiveButton("Got It", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions(MainActivity.this,
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                                 LOCATION_REQUEST);
                     }
                 });
 
                 AlertDialog alert = alertBuilder.create();
                 alert.show();
-            } else {
+            }
+            else {
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         LOCATION_REQUEST);
             }
-        } else {
-            mapInitialize();
         }
     }
 
@@ -465,21 +470,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      * @return Last known location, a Google Maps Location object.
      */
     private Location getLastKnownLoc() {
-        List<String> providers = locationManager.getProviders(true);
+        List<String> providers = locationManager.getAllProviders();
         Location bestLocation = null;
-        for (String provider : providers) {
 
-            //noinspection AndroidLintMissingPermission
-            Location l = locationManager.getLastKnownLocation(provider);
+        try {
+            if (mLocationPermissionGranted) {
+                for (String provider : providers) {
 
-            if (l == null) {
-                continue;
+                    //noinspection AndroidLintMissingPermission
+                    Location l = locationManager.getLastKnownLocation(provider);
+
+                    if (l == null) {
+                        continue;
+                    }
+                    if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                        // Found best last known location: %s", l);
+                        bestLocation = l;
+                    }
+                }
             }
-            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                // Found best last known location: %s", l);
-                bestLocation = l;
+            else {
+                bestLocation = new Location("DEFAULT_PROVIDER");
             }
         }
+        catch (SecurityException e) {
+            bestLocation = new Location("DEFAULT_PROVIDER");
+        }
+
         return bestLocation;
     }
 

@@ -8,14 +8,17 @@
     <color name="secondaryLightColor">#e2f1f8</color>
     <color name="secondaryDarkColor">#808e95</color>
     <color name="onSecondaryColor">#000000</color>
+    <color name="colorAccent">@color/secondaryColor</color>
     <color name="colorError">#cf6679</color>
     <color name="onErrorColor">#000000</color>
     <color name="primaryTextColor">#000000</color>
     <color name="primaryTextHintColor">#61ffffff</color>
     <color name="secondaryTextColor">#DEffffff</color>
+    <color name="secondaryTextColorME">#99ffffff</color>
     <color name="mapSearchColor">#363636</color>
     <color name="surfaceColor">#121212</color>
     <color name="onSurfaceColor">#DEffffff</color>
+    <color name="cardPrimaryColor">#121212</color>
     <color name="backgroundColor">#121212</color>
     <color name="onBackgroundColor">#DEFFFFFF</color>
 </resources>

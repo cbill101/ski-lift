@@ -58,7 +58,6 @@ public class ChatHistoryFragment extends Fragment {
         chatHistVM = ViewModelProviders.of(requireActivity()).get(ChatVM.class);
         chatItems = new ArrayList<>();
         histAdapter = new ChatHistoryItemRecyclerViewAdapter(chatItems, mListener);
-        setRetainInstance(true);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);

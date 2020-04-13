@@ -16,23 +16,23 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/confirmDestinationButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/confirm_destination"
-        android:elevation="8dp"
         android:visibility="invisible"
+        style="@style/SkiLiftTheme.DefaultButton"
         app:layout_constraintBottom_toBottomOf="@+id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/pickFromListButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="8dp"
+        style="@style/SkiLiftTheme.DefaultButton"
         app:layout_constraintBottom_toTopOf="@id/confirmDestinationButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -70,22 +70,17 @@
         android:layout_width="@dimen/search_tb_width"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:background="@color/surfaceColor"
-        android:elevation="4dp"
+        android:background="@color/mapSearchColor"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-        <fragment
+        <androidx.fragment.app.FragmentContainerView
             android:id="@+id/autocomplete_fragment"
             android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.494"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+            android:layout_width="@dimen/search_tb_width"
+            android:layout_height="wrap_content" />
 
     </FrameLayout>
 
