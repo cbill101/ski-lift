@@ -2,10 +2,14 @@ package com.example.skilift.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -29,6 +33,8 @@ public class RideListActivity extends AppCompatActivity implements OnResultClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride_list);
+        Toolbar myToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
         confirmButton = findViewById(R.id.confirmButton);
 
         confirmButton.setOnClickListener(v -> {
@@ -72,6 +78,34 @@ public class RideListActivity extends AppCompatActivity implements OnResultClick
         if(isProvider) {
             descText.setText(R.string.list_of_requests);
             confirmButton.setText(R.string.confirm);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_context_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.account:
+                startActivity(new Intent(getApplicationContext(), AccountPage.class));
+                return true;
+            case R.id.settings:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                return true;
+            case R.id.chats:
+                startActivity(new Intent(getApplicationContext(), ChatHistoryActivity.class));
+                return true;
+            case R.id.help:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

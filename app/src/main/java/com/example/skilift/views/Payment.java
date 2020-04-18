@@ -2,9 +2,13 @@ package com.example.skilift.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -49,6 +53,8 @@ public class Payment extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
+        Toolbar myToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
         mFunctions =FirebaseFunctions.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         Intent intent = getIntent();
@@ -118,6 +124,34 @@ public class Payment extends AppCompatActivity {
                         return result;
                     }
                 });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_context_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.account:
+                startActivity(new Intent(getApplicationContext(), AccountPage.class));
+                return true;
+            case R.id.settings:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                return true;
+            case R.id.chats:
+                startActivity(new Intent(getApplicationContext(), ChatHistoryActivity.class));
+                return true;
+            case R.id.help:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     //For now goes to next page
