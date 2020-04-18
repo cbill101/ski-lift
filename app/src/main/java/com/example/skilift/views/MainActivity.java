@@ -82,11 +82,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        /*
         // Locks portrait oh phones cause who wants to use a scrunched map on phones? Tablets are a go though.
         if (getResources().getBoolean(R.bool.portrait_only)) {
             //noinspection AndroidLintSourceLockedOrientationActivity
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+        */
 
         mLocationPermissionGranted = checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED;

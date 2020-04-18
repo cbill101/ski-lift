@@ -6,41 +6,51 @@
     android:layout_height="match_parent"
     tools:context=".views.UserType">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/SkiLiftTheme.DefaultToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/app_title" />
+
     <TextView
         android:id="@+id/userTypeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="84dp"
         android:ems="10"
         android:text="@string/user_type"
         android:textAlignment="center"
         android:textSize="36sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/providerButton"
+        style="@style/SkiLiftTheme.DefaultButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="108dp"
+        android:layout_marginTop="76dp"
         android:text="@string/actionProvide"
-        style="@style/SkiLiftTheme.DefaultButton"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/requesterButton"
-        app:layout_constraintVertical_bias="0.941" />
+        app:layout_constraintTop_toBottomOf="@+id/requesterButton" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/requesterButton"
+        style="@style/SkiLiftTheme.DefaultButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="32dp"
         android:text="@string/actionRequest"
-        style="@style/SkiLiftTheme.DefaultButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.499"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userTypeText" />
 </androidx.constraintlayout.widget.ConstraintLayout>
