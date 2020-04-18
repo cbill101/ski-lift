@@ -62,4 +62,14 @@
         <item name="cardElevation">2dp</item>
     </style>
 
+    <style name="SkiLiftTheme.MessageCardLeft" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/secondaryDarkColor</item>
+        <item name="cardElevation">4dp</item>
+    </style>
+
+    <style name="SkiLiftTheme.MessageCardRight" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">@color/secondaryDarkColor</item>
+        <item name="cardElevation">4dp</item>
+    </style>
+
 </resources>
