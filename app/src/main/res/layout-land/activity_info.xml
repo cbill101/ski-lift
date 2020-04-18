@@ -9,15 +9,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="@style/SkiLiftTheme.DefaultToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="Ride Information" />
+
         <TextView
             android:id="@+id/infoText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="64dp"
             android:text="@string/information"
             android:textSize="36sp"
             app:layout_constraintEnd_toEndOf="@+id/priceInputLayout"
-            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="@+id/priceInputLayout"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,18 +42,6 @@
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@+id/priceInputLayout"
             app:layout_constraintTop_toBottomOf="@+id/priceInputLayout" />
-
-        <TextView
-            android:id="@+id/departText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/departure"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="@+id/pickArrivalTimeButton"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/pickArrivalTimeButton"
-            app:layout_constraintTop_toBottomOf="@+id/pickArrivalTimeButton" />
 
         <TextView
             android:id="@+id/arrivalTimeText"
@@ -89,13 +88,12 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/sendButton"
+            style="@style/SkiLiftTheme.DefaultButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:text="@string/send"
-            style="@style/SkiLiftTheme.DefaultButton"
             app:layout_constraintEnd_toEndOf="@+id/priceInputLayout"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="@+id/priceInputLayout"
             app:layout_constraintTop_toBottomOf="@+id/pickDepartureTimeButton" />
 
@@ -114,34 +112,45 @@
             app:layout_constraintTop_toBottomOf="@+id/arrivalText"
             android:onClick="showArrivalTimePicker"/>
 
+        <TextView
+            android:id="@+id/departText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/departure"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@+id/arrivalText"
+            app:layout_constraintTop_toBottomOf="@+id/priceInputLayout" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pickDepartureTimeButton"
             style="@style/SkiLiftTheme.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:elevation="2dp"
+            android:onClick="showDepartTimePicker"
             android:text="@string/pick_time"
             android:textSize="16sp"
-            android:elevation="2dp"
             app:layout_constraintEnd_toEndOf="@+id/departText"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/departText"
-            app:layout_constraintTop_toBottomOf="@+id/departText"
-            android:onClick="showDepartTimePicker"/>
+            app:layout_constraintTop_toBottomOf="@+id/departText" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/finishedButton"
+            style="@style/SkiLiftTheme.DefaultButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/next_page"
             android:layout_marginTop="16dp"
-            style="@style/SkiLiftTheme.DefaultButton"
+            android:text="@string/next_page"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/sendButton"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

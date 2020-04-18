@@ -2,6 +2,7 @@ package com.example.skilift.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -13,6 +14,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -53,6 +57,8 @@ public class Info extends AppCompatActivity implements FirebaseResultListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
+        Toolbar myToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
         infoViewModel = ViewModelProviders.of(this).get(InformationVM.class);
 
         nextPageButton = findViewById(R.id.finishedButton);
@@ -88,6 +94,34 @@ public class Info extends AppCompatActivity implements FirebaseResultListener {
     private void openWait() {
         Intent intent = new Intent(this, Wait.class);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_context_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.account:
+                startActivity(new Intent(getApplicationContext(), AccountPage.class));
+                return true;
+            case R.id.settings:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                return true;
+            case R.id.chats:
+                startActivity(new Intent(getApplicationContext(), ChatHistoryActivity.class));
+                return true;
+            case R.id.help:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     //Anderson put the stuff you need to have happen when the button is pressed here
