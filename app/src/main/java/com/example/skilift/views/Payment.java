@@ -42,6 +42,7 @@ import java.util.Map;
 public class Payment extends AppCompatActivity {
     private Button nextPageButton;
     private CardInputWidget cardInfo;
+    Button payButton;
     private TextView priceTextView;
     private String providerUID;
     private FirebaseFunctions mFunctions;
@@ -65,7 +66,7 @@ public class Payment extends AppCompatActivity {
         priceTextView.append("Price: $"+price);
         nextPageButton = findViewById(R.id.finishedButton);
 
-        Button payButton = findViewById(R.id.payButton);
+        payButton = findViewById(R.id.payButton);
         payButton.setOnClickListener((View view) -> {
             PaymentMethodCreateParams params = cardInfo.getPaymentMethodCreateParams();
             if (params != null) {
