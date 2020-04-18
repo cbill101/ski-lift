@@ -6,32 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".views.Payment">
 
-    <Button
-        android:id="@+id/finishedButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/confirm_and_pay"
-        style="@style/SkiLiftTheme.DefaultButton"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.99"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <EditText
-        android:id="@+id/editTextDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="@+id/editTextCC"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textViewDate"
-        app:layout_constraintTop_toBottomOf="@+id/editTextCC" />
-
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         style="@style/SkiLiftTheme.DefaultToolbar"
@@ -42,52 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Payment" />
-
-    <TextView
-        android:id="@+id/textViewCC"
-        style="@style/SkiLiftTheme.TextView.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="68dp"
-        android:layout_marginTop="56dp"
-        android:text="Credit Card"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/priceTextView" />
-
-    <TextView
-        android:id="@+id/textViewDate"
-        style="@style/SkiLiftTheme.TextView.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="48dp"
-        android:text="Expiration Date"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewCC" />
-
-    <TextView
-        android:id="@+id/textViewSC"
-        style="@style/SkiLiftTheme.TextView.Medium"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="44dp"
-        android:text="Security Code"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDate" />
-
-    <EditText
-        android:id="@+id/editTextCC"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="68dp"
-        android:layout_marginTop="44dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="@+id/priceTextView"
-        app:layout_constraintHorizontal_bias="0.254"
-        app:layout_constraintStart_toEndOf="@+id/textViewCC"
-        app:layout_constraintTop_toBottomOf="@+id/priceTextView" />
 
     <TextView
         android:id="@+id/priceTextView"
@@ -101,16 +29,24 @@
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         tools:text="@string/price" />
 
-    <EditText
-        android:id="@+id/editTextSC"
+    <com.stripe.android.view.CardInputWidget
+        android:id="@+id/cardInputWidget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/payButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/priceTextView" />
+
+    <Button
+        android:id="@+id/payButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="3dp"
-        android:layout_marginTop="20dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="@+id/editTextDate"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/textViewSC"
-        app:layout_constraintTop_toBottomOf="@+id/editTextDate" />
+        android:text="Pay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/cardInputWidget"
+        app:layout_constraintStart_toStartOf="@+id/cardInputWidget"
+        app:layout_constraintTop_toBottomOf="@+id/cardInputWidget" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

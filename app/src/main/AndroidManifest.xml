@@ -46,6 +46,7 @@
 
         <activity android:name=".views.Communicate" />
         <activity android:name=".views.Payment" />
+        <activity android:name=".views.CheckoutActivity" />
         <activity android:name=".views.RideListActivity" />
         <activity android:name=".views.Wait" />
         <activity android:name=".views.Info" />

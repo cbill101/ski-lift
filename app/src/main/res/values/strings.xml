@@ -52,6 +52,9 @@
     <string name="pick_time">Pick Time</string>
     <string name="title_activity_ski_lift_settings">Settings</string>
 
+    <!-- Stripe Public key -->
+    <string name="stripe_public_key">pk_test_GvnlbjP9Qggx4F631gzDbyRX00hltajVIV</string>
+
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>

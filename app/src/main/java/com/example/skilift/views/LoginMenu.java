@@ -26,6 +26,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.stripe.android.PaymentConfiguration;
 
 
 public class LoginMenu extends OnboardingCommon {
@@ -61,6 +62,12 @@ public class LoginMenu extends OnboardingCommon {
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        //configure stripe
+        PaymentConfiguration.init(
+                getApplicationContext(),
+                "@string/stripe_public_key"
+        );
 
         gsoButton = findViewById(R.id.googleLoginButton);
         gsoButton.setOnClickListener(new View.OnClickListener() {
