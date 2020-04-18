@@ -8,6 +8,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 
 public class RideRequestTester {
@@ -54,7 +55,29 @@ public class RideRequestTester {
     @Test
     public void getPrice() { assertEquals("50.25", rideRequest.getPrice()); }
 
+    @Test
+    public void getNameNotEquals() { assertNotEquals("Jan", rideRequest.getName()); }
 
+    @Test
+    public void getPhoneNotEquals() { assertNotEquals("805128567", rideRequest.getPhone()); }
+
+    @Test
+    public void getDestLatitudeNotEquals() { assertNotEquals(6548, rideRequest.getDestLatitude(), DELTA); }
+
+    @Test
+    public void getDestLongitudeNotEquals() { assertNotEquals(4897, rideRequest.getDestLongitude(), DELTA); }
+
+    @Test
+    public void getPickupLatitudeNotEquals() { assertNotEquals(8987, rideRequest.getPickupLatitude(), DELTA); }
+
+    @Test
+    public void getPickupLongitudeNotEquals() { assertNotEquals(15648, rideRequest.getPickupLongitude(), DELTA); }
+
+    @Test
+    public void getDestNameNotEquals() { assertNotEquals("Ogden Resort", rideRequest.getDestName()); }
+
+    @Test
+    public void getPriceNotEquals() { assertNotEquals("51.25", rideRequest.getPrice()); }
 }
 
 class RQ {
