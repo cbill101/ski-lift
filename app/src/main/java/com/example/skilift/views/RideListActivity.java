@@ -91,7 +91,7 @@ public class RideListActivity extends AppCompatActivity implements OnResultClick
     private void openPayment() {
         Intent intent = new Intent(this, Payment.class);
         intent.putExtra("providerUID", selectedProvider.getUID());
-        intent.putExtra("amountCharged",(int)Double.parseDouble(selectedProvider.getPrice().substring(1))*100);
+        intent.putExtra("amountCharged",selectedProvider.getPrice().substring(1));
         startActivity(intent);
     }
 

@@ -21,8 +21,16 @@ import com.example.skilift.R;
 import com.example.skilift.views.Communicate;
 import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.HttpsCallableResult;
+import com.stripe.android.ApiResultCallback;
+import com.stripe.android.PaymentConfiguration;
+import com.stripe.android.Stripe;
+import com.stripe.android.model.Card;
+import com.stripe.android.model.ConfirmPaymentIntentParams;
+import com.stripe.android.model.PaymentMethodCreateParams;
+import com.stripe.android.model.Token;
 import com.stripe.android.view.CardInputWidget;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +42,7 @@ public class Payment extends AppCompatActivity {
     private String providerUID;
     private FirebaseFunctions mFunctions;
     private String paymentIntentClientSecret;
+    private Stripe stripe;
     FirebaseUser user;
 
     @Override
@@ -43,19 +52,29 @@ public class Payment extends AppCompatActivity {
         mFunctions =FirebaseFunctions.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         Intent intent = getIntent();
-        int price = intent.getIntExtra("amountCharged",10);
+        String price = intent.getStringExtra("amountCharged");
         providerUID = intent.getStringExtra("providerUID");
         cardInfo = findViewById(R.id.cardInputWidget);
         priceTextView = findViewById(R.id.priceTextView);
-        priceTextView.append("Price: $"+String.valueOf(price));
+        priceTextView.append("Price: $"+price);
         nextPageButton = findViewById(R.id.finishedButton);
-        nextPageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+
+        Button payButton = findViewById(R.id.payButton);
+        payButton.setOnClickListener((View view) -> {
+            PaymentMethodCreateParams params = cardInfo.getPaymentMethodCreateParams();
+            if (params != null) {
+//                Map<String, String> extraParams = new HashMap<>();
+//                extraParams.put("setup_future_usage", "off_session");
+//
+//                ConfirmPaymentIntentParams confirmParams = ConfirmPaymentIntentParams
+//                        .createWithPaymentMethodCreateParams(params, paymentIntentClientSecret, null, false, extraParams);
+//                stripe = new Stripe(getApplicationContext(), PaymentConfiguration.getInstance(getApplicationContext()).getPublishableKey());
+//                stripe.confirmPayment(this, confirmParams);
                 openCommunicate();
             }
         });
-        startCheckout(price);
+
+        //startCheckout((int)Double.parseDouble(price)*100);
     }
 
     private void startCheckout(int inputPrice){

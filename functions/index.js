@@ -20,7 +20,7 @@ exports.createStripeCustomer = functions.auth.user().onCreate(async (user) => {
          requested_capabilities: ['card_payments', 'transfers']
      }
     );
-  const customer = await stripe.accountLinks.create({email: user.email});
+  const customer = await stripe.customers.create({email:user.email});
 
   return admin.firestore().collection('users').doc(user.uid).set(
     {stripe_customer_id: customer.id, stripe_account_id: account.id },
@@ -31,12 +31,27 @@ exports.createStripeCustomer = functions.auth.user().onCreate(async (user) => {
 //Creates payment intent
 exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
     console.log(data.amount);
-    console.log(data.uid);
-    const intent = await stripe.paymentIntents.create({
-          amount: 1000,
-          currency: "usd",
-          customer: data.uid
-    });
+    console.log(data.uid)
+    var doc = admin.firestore().collection('users').doc(data.uid).get()
+      .then(doc => {
+        if (!doc.exists) {
+            console.log('No such document!');
+        } else {
+            var cid = doc.get('stripe_customer_id');
+            console.log('Document data:', doc.get('stripe_customer_id'));
+        }
+        return doc;
+      })
+        .catch(err => {
+            console.log('Error getting document', err);
+      });
+
+    const paymentIntent = await stripe.paymentIntents.create(
+        {
+            amount: 2000,
+            currency: 'usd'
+        }
+    );
     
     return {
       client_secret: intent.client_secret,
