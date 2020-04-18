@@ -1,6 +1,7 @@
 package com.example.skilift.views;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
@@ -50,7 +51,7 @@ public class LoginMenu extends OnboardingCommon {
 
         loginButton = findViewById(R.id.loginButton);
         createAccountButton = findViewById(R.id.createAccountButton);
-        onboardViewModel = ViewModelProviders.of(this).get(OnboardingVM.class);
+        onboardViewModel = new ViewModelProvider(this).get(OnboardingVM.class);
 
         // Else, sign in options! Google:
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

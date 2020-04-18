@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.preference.PreferenceManager;
 
@@ -55,7 +56,7 @@ public abstract class OnboardingCommon extends AppCompatActivity implements Logi
         Utils.loadThemePreference(sp);
 
         setContentView(getLayoutID());
-        onboardViewModel = ViewModelProviders.of(this).get(OnboardingVM.class);
+        onboardViewModel = new ViewModelProvider(this).get(OnboardingVM.class);
 
         usernameInput = findViewById(R.id.usernameInput);
         usernameLayout = findViewById(R.id.usernameInputLayout);

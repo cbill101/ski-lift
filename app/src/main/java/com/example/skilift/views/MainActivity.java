@@ -1,5 +1,6 @@
 package com.example.skilift.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -22,9 +23,14 @@ import android.location.LocationListener;
 import com.example.skilift.R;
 import com.example.skilift.misc.Utils;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
@@ -53,20 +59,19 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, SharedPreferences.OnSharedPreferenceChangeListener {
     private MapView rsMapView;
     private GoogleMap mMap;
-    private LocationManager locationManager;
-    private LocationListener listener;
-    private Bundle mainActBundle;
     private AutocompleteSupportFragment autocompleteFragment;
     private SharedPreferences sp;
     private Marker marker;
     private Button confirmDest;
     private Button pickFromList;
     private Place currentSelection;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Location mCurrentLocation;
+    private LatLng mDefaultLocation = new LatLng(0, 0);
     private boolean mLocationPermissionGranted;
     private boolean isProvider;
 
     public static final int LOCATION_REQUEST = 0;
-    private static final int AUTOCOMPLETE_REQUEST = 1;
     private static final String TAG = "MainActivity";
 
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
@@ -77,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Locking in portrait for our purposes for now... is it really worth doing landscape unless it's a tablet?
+        // Locks portrait oh phones cause who wants to use a scrunched map on phones? Tablets are a go though.
         if (getResources().getBoolean(R.bool.portrait_only)) {
             //noinspection AndroidLintSourceLockedOrientationActivity
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -87,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 == PackageManager.PERMISSION_GRANTED;
 
         setContentView(R.layout.activity_main);
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         Toolbar myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
@@ -128,19 +135,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
 
-        mainActBundle = new Bundle();
-
         rsMapView = findViewById(R.id.mapView);
 
         rsMapView.onCreate(savedInstanceState);
         rsMapView.getMapAsync(this);
 
-        if(savedInstanceState != null) {
-
-        }
-        else {
-            getLocationPermission();
-        }
+        getLocationPermission();
 
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), getString(R.string.googleApiKey));
@@ -174,6 +174,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivity(new Intent(getApplicationContext(), ChatHistoryActivity.class));
                 return true;
             case R.id.help:
+                return true;
+            case R.id.about:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -212,8 +214,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mLocationPermissionGranted = true;
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener);
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, listener);
                 } else {
                     FloatingActionButton centerLoc = findViewById(R.id.centerLocButton);
                     centerLoc.hide();
@@ -302,31 +302,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
 
-        // Zoom into users location
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        listener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-        };
-
         updateLocationUI();
+
+        getDeviceLocation();
 
         rsMapView.onResume();
     }
@@ -351,12 +329,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     @Override
                     public void onClick(View v) {
-                        centreMapOnLocation(getLastKnownLoc());
+                        centreMapOnDeviceLocation();
                     }
                 });
                 centerLoc.show();
 
-                centreMapOnLocation(getLastKnownLoc());
+                getDeviceLocation();
             } else {
                 mMap.setMyLocationEnabled(false);
                 centerLoc.hide();
@@ -373,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         intent.putExtra("DestLongitude", marker.getPosition().longitude);
 
         if(!isProvider)
-            intent.putExtra("PickupLocation", getLastKnownLoc());
+            intent.putExtra("PickupLocation", mCurrentLocation);
 
         intent.putExtra("PlaceName", currentSelection.getName());
         intent.putExtra("Provider", isProvider);
@@ -413,21 +391,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     /**
      * Center's the map to the passed in location.
      *
-     * @param location - google maps location object being the location to center to.
-     */
-    public void centreMapOnLocation(Location location) {
-        LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 100, null);
-    }
-
-    /**
-     * Center's the map to the passed in location.
-     *
      * @param place - google maps place object being the location to center to.
      */
     public void centreMapOnLocation(Place place) {
         LatLng userLocation = place.getLatLng();
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 14), 100, null);
+    }
+
+    private void centreMapOnDeviceLocation() {
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()), 14), 100, null);
     }
 
     private void getLocationPermission() {
@@ -469,35 +441,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
      *
      * @return Last known location, a Google Maps Location object.
      */
-    private Location getLastKnownLoc() {
-        List<String> providers = locationManager.getAllProviders();
-        Location bestLocation = null;
-
+    private void getDeviceLocation() {
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
+         */
         try {
             if (mLocationPermissionGranted) {
-                for (String provider : providers) {
-
-                    //noinspection AndroidLintMissingPermission
-                    Location l = locationManager.getLastKnownLocation(provider);
-
-                    if (l == null) {
-                        continue;
+                Task locationResult = mFusedLocationProviderClient.getLastLocation();
+                locationResult.addOnCompleteListener(this, new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if (task.isSuccessful()) {
+                            // Set the map's camera position to the current location of the device.
+                            mCurrentLocation = (Location) task.getResult();
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(mCurrentLocation.getLatitude(),
+                                            mCurrentLocation.getLongitude()), 14));
+                        } else {
+                            Log.d(TAG, "Current location is null. Using defaults.");
+                            Log.e(TAG, "Exception: %s", task.getException());
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 14));
+                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                        }
                     }
-                    if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                        // Found best last known location: %s", l);
-                        bestLocation = l;
-                    }
-                }
+                });
             }
-            else {
-                bestLocation = new Location("DEFAULT_PROVIDER");
-            }
-        }
-        catch (SecurityException e) {
-            bestLocation = new Location("DEFAULT_PROVIDER");
+        } catch(SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
         }
 
-        return bestLocation;
     }
 
     @Override

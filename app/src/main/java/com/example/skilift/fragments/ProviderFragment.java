@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,7 +54,7 @@ public class ProviderFragment extends Fragment implements OnResultClickListener 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-        provViewModel = ViewModelProviders.of(requireActivity()).get(SharedListVM.class);
+        provViewModel = new ViewModelProvider(requireActivity()).get(SharedListVM.class);
         provList = new ArrayList<>();
         reqList = new ArrayList<>();
 
