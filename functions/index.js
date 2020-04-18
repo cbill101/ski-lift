@@ -12,11 +12,34 @@ const currency = functions.config().stripe.currency || 'USD';
 
 // When a user is created, register them with Stripe
 exports.createStripeCustomer = functions.auth.user().onCreate(async (user) => {
-  const customer = await stripe.accounts.create({
-                                                     email: user.email,
-                                                     country: 'US',
-                                                     type: 'custom',
-                                                     requested_capabilities: ['card_payments', 'transfers']
-                                                 });
-  return admin.firestore().collection('users').doc(user.uid).set({stripe_id: customer.id},{merge: true});
+  const account = await stripe.accounts.create(
+    {
+         email: user.email,
+         country: 'US',
+         type: 'custom',
+         requested_capabilities: ['card_payments', 'transfers']
+     }
+    );
+  const customer = await stripe.accountLinks.create({email: user.email});
+
+  return admin.firestore().collection('users').doc(user.uid).set(
+    {stripe_customer_id: customer.id, stripe_account_id: account.id },
+    {merge: true}
+    );
 });
+
+//Creates payment intent
+exports.createPaymentIntent = functions.https.onCall(async (data, context) => {
+    console.log(data.amount);
+    console.log(data.uid);
+    const intent = await stripe.paymentIntents.create({
+          amount: 1000,
+          currency: "usd",
+          customer: data.uid
+    });
+    
+    return {
+      client_secret: intent.client_secret,
+    };
+});
+
